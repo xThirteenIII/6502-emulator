@@ -29,4 +29,4 @@ This means this 256 bytes behave like a bunch of registers, you've got lots of i
 This was what made the 6502 fast, you could do a lot of things faster skipping one clock cycle, and when you had not so many 
 cycles per tick you had to save as many as you could.
 
-The second page of memory, the next 256 bytes are stack memory, which you can't relocate.
+The second page of memory, the next 256 bytes are stack memory, which you can't relocate. (from $0100 to $01FF)
