@@ -66,6 +66,12 @@ type Memory struct {
    Data [MaxMem]Byte
 }
 
+type Instruction interface {
+    execute()
+    write()
+    next()
+}
+
 func (mem *Memory) Initialise(){
     
     for i := 0; i < MaxMem; i++{
@@ -73,7 +79,7 @@ func (mem *Memory) Initialise(){
     }
 }
 
-func (cpu *CPU) Reset( mem *Memory){
+func (cpu *CPU) Reset( memory *Memory){
 
     // Reset procedure does not follow accurate Commodor 64, it acts like a computer that's like a 
     // Commodor 64.
@@ -100,10 +106,29 @@ func (cpu *CPU) Reset( mem *Memory){
     cpu.Y = 0
 }
 
+func (cpu *CPU) Execute( cycles uint32,  memory *Memory){
+
+    for (cycles > 0){
+        cycles--
+    }
+}
+
+func (cpu *CPU) FetchByte( cycles uint32,  memory *Memory) Byte{
+
+    Data := memory.Data[cpu.PC] 
+    cpu.PC += 8
+    cycles--
+
+    return Data
+}
+
+
+
 func main() {
 
     mem := &Memory{}
     cpu :=  CPU{}
     cpu.Reset(mem)
+    cpu.Execute(2, mem)
 
 }
