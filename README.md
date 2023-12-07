@@ -13,7 +13,7 @@ that can address the memory. The processor is little endian and expects addresse
 
 This means if we have a 16-bit value '0xABCD' the 6502 stores it as 'CD AB'
 
-Memory Address   | 0  | 1  | 2  | 3
+Memory Address   | 0  | 1  | 2  | 3     return
 -----------------+----+----+----+----
 Little-endian    | CD | AB | -- | --
 Big-endian       | AB | CD | -- | --
