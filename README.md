@@ -13,10 +13,10 @@ that can address the memory. The processor is little endian and expects addresse
 
 This means if we have a 16-bit value '0xABCD' the 6502 stores it as 'CD AB'
 
-Memory Address   | 0  | 1  | 2  | 3 `<br>`
------------------+----+----+----+----
-Little-endian    | CD | AB | -- | --
-Big-endian       | AB | CD | -- | --
+Memory Address   | 0  | 1  | 2  | 3 <br />
+-----------------+----+----+----+---- <br />
+Little-endian    | CD | AB | -- | --  <br />
+Big-endian       | AB | CD | -- | -- <br />
 
 Back in the days where memory was expensive and computers didn't have much for that reason, the cpu has a bunch of different
 addressing modes on most of the instructions, that allows to address stuff that is in the first 256 bytes (called Zero Page, which 
