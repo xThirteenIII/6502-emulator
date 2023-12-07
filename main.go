@@ -16,5 +16,4 @@ import (
 func main() {
 
     fmt.Println("fooooooooooooooooooo")
-
 }

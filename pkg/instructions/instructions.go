@@ -32,7 +32,7 @@ func (ins *GenericInstruction) execute(memory *arc.Memory, cpu  *arc.CPU){
         case INS_LDA_IM:
 
             // Load value into A
-            cpu.A = cpu.FetchByte( &ins.Cycles, memory)
+            cpu.A = arc.FetchByte( &ins.Cycles, memory)
 
             // Set Z flag if A is 0
             if cpu.A == 0 {

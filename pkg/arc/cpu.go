@@ -13,7 +13,6 @@ import "fmt"
 // The 6502 is an 8-bit processor internally, but it has a 16-bit address bus for addressing memory locations.
 // This allows it to work with a larger address space even though its data bus is 8 bits wide.
 
-
 type ProcessorStatus struct {
     C uint
     Z uint
