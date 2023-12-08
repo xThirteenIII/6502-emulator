@@ -13,6 +13,21 @@ import "fmt"
 // The 6502 is an 8-bit processor internally, but it has a 16-bit address bus for addressing memory locations.
 // This allows it to work with a larger address space even though its data bus is 8 bits wide.
 
+const MaxMem = 1024 * 64
+
+type Memory struct {
+
+   Data [MaxMem]byte
+}
+
+
+
+func (mem *Memory) Initialise(){
+    
+    for i := 0; i < MaxMem; i++{
+        mem.Data[i] = 0
+    }
+}
 type ProcessorStatus struct {
     C uint
     Z uint
@@ -49,9 +64,11 @@ type CPU struct {
 
     // The Processor Status is a 8-bit status which holds a bunch of bits, that get set in it after operations.
     PS ProcessorStatus
+
+    Memory Memory
 }
 
-func (cpu *CPU) Reset( memory *Memory){
+func (cpu *CPU) Reset(){
 
     // Reset procedure does not follow accurate Commodor 64, it acts like a computer that's like a 
     // Commodor 64.
@@ -76,19 +93,41 @@ func (cpu *CPU) Reset( memory *Memory){
     cpu.A = 0
     cpu.X = 0
     cpu.Y = 0
+
+    cpu.Memory.Initialise()
 }
 
-func (cpu *CPU) FetchByte( cycles *int,  memory *Memory) byte{
-
-    Data := memory.Data[cpu.PC] 
-
-    *cycles--
-
-    return Data
-}
 
 func (cpu *CPU) PrintValues(){
     fmt.Println("PC:", cpu.PC)
     fmt.Println("SP:", cpu.SP)
     fmt.Println("PS:", cpu.PS)
+}
+
+// FetchByte reads the byte located at the PC address
+// It increases the program counter and takes a clock cycle
+func (cpu *CPU) FetchByte( cycles *int) (byte, error){
+
+    // TODO:Check if PC exceeds MAX_MEM
+    data := cpu.Memory.Data[cpu.PC] 
+
+    *cycles--
+
+    cpu.PC++
+
+    return data, nil
+}
+
+// ReadByte reads a piece of memory, without increasing the PC.
+// It takes a clock cycle
+func (cpu *CPU) ReadByte( cycles *int, address uint16) byte{
+
+    // TODO:Check if PC exceeds MAX_MEM
+    data := cpu.Memory.Data[address] 
+
+    *cycles--
+
+    cpu.PC++
+
+    return data
 }

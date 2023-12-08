@@ -1,6 +1,8 @@
 package main
 
 import (
+	"emulator/pkg/arc"
+	"emulator/pkg/instructions"
 	"fmt"
 )
 
@@ -15,5 +17,29 @@ import (
 
 func main() {
 
-    fmt.Println("fooooooooooooooooooo")
+
+
+    cpu := arc.CPU{}
+    cpu.Memory = arc.Memory{}
+
+    cpu.Reset()
+
+    fmt.Println("initial cpu values:")
+    cpu.PrintValues()
+    // start - inline program
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZP
+    cpu.Memory.Data[0xFFFD] = 0x42
+    cpu.Memory.Data[0x0042] = 0x84
+    // end - inline program
+
+    // try to execute that instruction
+    //fmt.Println(mem.Data[0xFFFD])
+    instructions.ExecuteInstruction(instructions.INS_LDA_ZP, &cpu)
+
+    fmt.Println("A:",cpu.A)
+
+    fmt.Println("final cpu values:")
+    cpu.PrintValues()
+
+
 }
