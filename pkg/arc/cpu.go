@@ -1,6 +1,10 @@
 package arc
 
-import "fmt"
+import (
+	"emulator/pkg/instructions"
+	"fmt"
+	"log"
+)
 
 // Typical of the PS:
 // +---+---+---+---+---+---+---+---+
@@ -111,9 +115,10 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
     // TODO:Check if PC exceeds MAX_MEM
     data := cpu.Memory.Data[cpu.PC] 
 
-    *cycles--
+    fmt.Println("fetched: ", data)
 
     cpu.PC++
+    *cycles--
 
     return data, nil
 }
@@ -127,7 +132,77 @@ func (cpu *CPU) ReadByte( cycles *int, address uint16) byte{
 
     *cycles--
 
-    cpu.PC++
-
     return data
+}
+
+func (cpu *CPU) Execute( cycles *int ) error {
+
+    for *cycles > 0 {
+
+        // Fetch instruction, takes up one clock cycle
+        ins, err := cpu.FetchByte(cycles)
+        if err != nil {
+            return err
+        }
+        
+        // Execute code based on the opcode
+        switch (ins) {
+
+        case instructions.INS_LDA_IM:
+
+            // Load value into A
+            // Is it ok to modify directly the cycles in the ins variable? What if i need it after?
+            var err error
+            cpu.A , err = cpu.FetchByte( cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ", err.Error())
+            }
+
+            // Set Z flag if A is 0 1
+            if cpu.A == 0 {
+                cpu.PS.Z = 1
+            }
+
+            // Set N flag if the bit 7 of A is set
+            // byte(1 << 7) is a bitmask that has the 7 bit set to 1
+            // it left-shifts the 00000001 seven positions left
+            if (cpu.A & byte(1 << 7) != 0) {
+                cpu.PS.N = 1
+            }
+            break;
+        case instructions.INS_LDA_ZP:
+
+            // First byte is the ZeroPage address
+            // Second byte is the value to load
+
+            // First cycle to fetch the instruction
+            // Second cycle to fetch the address
+            // The third cycle to read the data from the address
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+            
+            // Load the data at the zeroPageAddress in the A register
+            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
+            fmt.Println(zeroPageAddress,cpu.Memory.Data[zeroPageAddress])
+
+            // Set Z flag if A is 0
+            if cpu.A == 0 {
+                cpu.PS.Z = 1
+            }
+
+            // Set N flag if the bit 7 of A is set
+            // byte(1 << 7) is a bitmask that has the 7 bit set to 1
+            // it left-shifts the 00000001 seven positions left
+            if (cpu.A & byte(1 << 7) != 0) {
+                cpu.PS.N = 1
+            }
+            break;
+        default:
+            log.Fatalln("Unknown opcode: ", ins)
+        }
+    }
+
+    return nil
 }

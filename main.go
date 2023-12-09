@@ -33,8 +33,9 @@ func main() {
     // end - inline program
 
     // try to execute that instruction
-    //fmt.Println(mem.Data[0xFFFD])
-    instructions.ExecuteInstruction(instructions.INS_LDA_ZP, &cpu)
+    // fmt.Println(mem.Data[0xFFFD])
+    cycles := 3
+    cpu.Execute(&cycles)
 
     fmt.Println("A:",cpu.A)
 
