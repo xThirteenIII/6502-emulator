@@ -115,7 +115,7 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
     // TODO:Check if PC exceeds MAX_MEM
     data := cpu.Memory.Data[cpu.PC] 
 
-    fmt.Println("fetched: ", data)
+    fmt.Println("fetched byte: ", data)
 
     cpu.PC++
     *cycles--
@@ -128,19 +128,17 @@ func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
     // TODO:Check if PC exceeds MAX_MEM
 
     // 6502 is little endian so first byte is the least significant byte of the data
-    data := cpu.Memory.Data[cpu.PC] 
+    data := uint16(cpu.Memory.Data[cpu.PC])
     cpu.PC++
+    *cycles--
 
     // second byte is the msb
-    // e.g. PC = 10011010 11100000 << 8 = 10011010 00000000
-    // 10011010 11100000 | 10011010 00000000 = 
-    data = data | cpu.Memory.Data[cpu.PC << 8] 
+    // e.g. data = 00000000 10011010 << 8 = 10011010 00000000
+    data = data | (uint16(cpu.Memory.Data[cpu.PC]) << 8 )
     cpu.PC++
+    *cycles--
 
-    // i can also do data = data & 11111111 00000000
-    *cycles-=2
-
-    return uint16(data), nil
+    return data, nil
 }
 
 // ReadByte reads a piece of memory, without increasing the PC.
@@ -159,6 +157,8 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
     for *cycles > 0 {
 
+        fmt.Println(*cycles)
+
         // Fetch instruction, takes up one clock cycle
         ins, err := cpu.FetchByte(cycles)
         if err != nil {
@@ -173,13 +173,14 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // Load value into A
             // Is it ok to modify directly the cycles in the ins variable? What if i need it after?
             var err error
-            cpu.A , err = cpu.FetchByte( cycles)
+            cpu.A , err = cpu.FetchByte(cycles)
             if err != nil {
                 fmt.Println("Error while fetching byte: ", err.Error())
             }
 
             LDASetStatus(cpu)
             break;
+
         case instructions.INS_LDA_ZP:
 
             // First byte is the ZeroPage address
@@ -199,6 +200,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             LDASetStatus(cpu)
             break;
+
         case instructions.INS_LDA_ZPX:
             zeroPageAddress, err := cpu.FetchByte(cycles)
             if err != nil {
@@ -213,21 +215,43 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             LDASetStatus(cpu)
             break;
+
         case instructions.INS_JSR:
 
-            subAddr, err := cpu.FetchWord(cycles)
+            // Fetch the targetMemoryAddress, which is where we have to jump to
+            targetMemoryAddress, err := cpu.FetchWord(cycles)
             if err != nil {
                 return err
             }
 
-            cpu.Memory.Data[cpu.SP] = cpu.PC - 1
+            // PC - 1 is the return address, where we return after the subRoutine exec
+            cpu.Memory.WriteWord(cycles, cpu.SP, cpu.PC-1)
+            cpu.SP++
+
+            cpu.PC = targetMemoryAddress
+            *cycles--
+
             break;
+
         default:
             log.Fatalln("Unknown opcode: ", ins)
         }
     }
 
     return nil
+}
+
+func (memory *Memory) WriteWord(cycles *int, word ,address uint16){
+
+    // Little endian: we store LSB first
+    memory.Data[address] = byte(word & 0xFF)
+    *cycles--
+
+
+    // Store MSB
+    memory.Data[address+1] = byte(word >> 8)
+    *cycles--
+
 }
 
 func LDASetStatus(cpu *CPU) {

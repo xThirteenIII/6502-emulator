@@ -20,8 +20,7 @@ Big-endian       | AB | CD | -- | -- <br />
 
 Back in the days where memory was expensive and computers didn't have much for that reason, the cpu has a bunch of different
 addressing modes on most of the instructions, that allows to address stuff that is in the first 256 bytes (called Zero Page, which 
-goes from $0000 to $00FF), 
-one cycle quicker that you can do anywhere else.
+goes from $0000 to $00FF), one cycle quicker that you can do anywhere else.
 (In computer architectures, addressing modes define how the CPU calculates the effective address of an operand.
 Different addressing modes allow flexibility in specifying operands in instructions.)
 For example, instead of using a 16-bit address for an operand, you can use an 8-bit address if the operand is in the zero page.

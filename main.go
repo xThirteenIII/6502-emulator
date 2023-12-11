@@ -27,14 +27,16 @@ func main() {
     fmt.Println("initial cpu values:")
     cpu.PrintValues()
     // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZP
+    cpu.Memory.Data[0xFFFC] = instructions.INS_JSR
     cpu.Memory.Data[0xFFFD] = 0x42
-    cpu.Memory.Data[0x0042] = 0x84
+    cpu.Memory.Data[0xFFFE] = 0x42
+    cpu.Memory.Data[0x4242] = instructions.INS_LDA_IM
+    cpu.Memory.Data[0x4243] = 0x82
     // end - inline program
 
     // try to execute that instruction
     // fmt.Println(mem.Data[0xFFFD])
-    cycles := 3
+    cycles := 8
     cpu.Execute(&cycles)
 
     fmt.Println("A:",cpu.A)
