@@ -123,6 +123,26 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
     return data, nil
 }
 
+func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
+
+    // TODO:Check if PC exceeds MAX_MEM
+
+    // 6502 is little endian so first byte is the least significant byte of the data
+    data := cpu.Memory.Data[cpu.PC] 
+    cpu.PC++
+
+    // second byte is the msb
+    // e.g. PC = 10011010 11100000 << 8 = 10011010 00000000
+    // 10011010 11100000 | 10011010 00000000 = 
+    data = data | cpu.Memory.Data[cpu.PC << 8] 
+    cpu.PC++
+
+    // i can also do data = data & 11111111 00000000
+    *cycles-=2
+
+    return uint16(data), nil
+}
+
 // ReadByte reads a piece of memory, without increasing the PC.
 // It takes a clock cycle
 func (cpu *CPU) ReadByte( cycles *int, address uint16) byte{
@@ -158,17 +178,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
                 fmt.Println("Error while fetching byte: ", err.Error())
             }
 
-            // Set Z flag if A is 0 1
-            if cpu.A == 0 {
-                cpu.PS.Z = 1
-            }
-
-            // Set N flag if the bit 7 of A is set
-            // byte(1 << 7) is a bitmask that has the 7 bit set to 1
-            // it left-shifts the 00000001 seven positions left
-            if (cpu.A & byte(1 << 7) != 0) {
-                cpu.PS.N = 1
-            }
+            LDASetStatus(cpu)
             break;
         case instructions.INS_LDA_ZP:
 
@@ -187,6 +197,41 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
             fmt.Println(zeroPageAddress,cpu.Memory.Data[zeroPageAddress])
 
+            LDASetStatus(cpu)
+            break;
+        case instructions.INS_LDA_ZPX:
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // TODO: handle address overflow
+            // The address calculation wraps around if the sum of the base address and the register exceed $FF.
+            // ZeroPage address $80 and $FF in the X register then the accumulator will be loaded from $007F (e.g. $80 + $FF => $7F) and not $017F.
+            *cycles--
+            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
+
+            LDASetStatus(cpu)
+            break;
+        case instructions.INS_JSR:
+
+            subAddr, err := cpu.FetchWord(cycles)
+            if err != nil {
+                return err
+            }
+
+            cpu.Memory.Data[cpu.SP] = cpu.PC - 1
+            break;
+        default:
+            log.Fatalln("Unknown opcode: ", ins)
+        }
+    }
+
+    return nil
+}
+
+func LDASetStatus(cpu *CPU) {
+
             // Set Z flag if A is 0
             if cpu.A == 0 {
                 cpu.PS.Z = 1
@@ -198,11 +243,4 @@ func (cpu *CPU) Execute( cycles *int ) error {
             if (cpu.A & byte(1 << 7) != 0) {
                 cpu.PS.N = 1
             }
-            break;
-        default:
-            log.Fatalln("Unknown opcode: ", ins)
-        }
-    }
-
-    return nil
 }

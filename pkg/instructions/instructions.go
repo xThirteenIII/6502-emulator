@@ -9,4 +9,6 @@ const (
     // In zero page mode only the least significant byte of the address is held in the instruction making it shorter by one byte
     // (important for space saving) and one less memory fetch during execution (important for speed).
     INS_LDA_ZP = 0xA5
+    INS_LDA_ZPX = 0xB5
+    INS_JSR = 0x20
 )
