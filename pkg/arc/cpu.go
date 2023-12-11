@@ -115,7 +115,6 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
     // TODO:Check if PC exceeds MAX_MEM
     data := cpu.Memory.Data[cpu.PC] 
 
-    fmt.Println("fetched byte: ", data)
 
     cpu.PC++
     *cycles--
@@ -157,7 +156,6 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
     for *cycles > 0 {
 
-        fmt.Println(*cycles)
 
         // Fetch instruction, takes up one clock cycle
         ins, err := cpu.FetchByte(cycles)
@@ -196,7 +194,6 @@ func (cpu *CPU) Execute( cycles *int ) error {
             
             // Load the data at the zeroPageAddress in the A register
             cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
-            fmt.Println(zeroPageAddress,cpu.Memory.Data[zeroPageAddress])
 
             LDASetStatus(cpu)
             break;
