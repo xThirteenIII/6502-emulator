@@ -5,24 +5,22 @@ import (
 	"testing"
 )
 
-func TestExecute(t *testing.T){
+// Tests if the LDA instruction loads a value succeffully into the A register
+func TestLDACanLoadIntoARegister(t *testing.T){
+
+    want := byte(0x82)
 
     cpu := CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
     // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_JSR
-    cpu.Memory.Data[0xFFFD] = 0x42
-    cpu.Memory.Data[0xFFFE] = 0x42
-    cpu.Memory.Data[0x4242] = instructions.INS_LDA_IM
-    cpu.Memory.Data[0x4243] = 0x82
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_IM
+    cpu.Memory.Data[0xFFFD] = want
     // end - inline program
 
-    cycles := 8
+    cycles := 2
     cpu.Execute(&cycles)
-
-    want := byte(0x82)
 
     got := cpu.A
 
@@ -31,5 +29,7 @@ func TestExecute(t *testing.T){
     }
 
     
+
+
 
 }
