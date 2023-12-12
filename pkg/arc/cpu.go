@@ -207,8 +207,9 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // TODO: handle address overflow
             // The address calculation wraps around if the sum of the base address and the register exceed $FF.
             // ZeroPage address $80 and $FF in the X register then the accumulator will be loaded from $007F (e.g. $80 + $FF => $7F) and not $017F.
+            // why like this? just to be 4 cycles?
             *cycles--
-            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
+            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress+cpu.X))
 
             LDASetStatus(cpu)
             break;
@@ -228,6 +229,24 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.PC = targetMemoryAddress
             *cycles--
 
+            break;
+        case instructions.INS_LDA_ABS:
+
+            address, err := cpu.FetchWord(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+            cpu.A = cpu.Memory.Data[address]
+
+
+            break;
+        case instructions.INS_LDA_ABSX:
+            break;
+        case instructions.INS_LDA_ABSY:
+            break;
+        case instructions.INS_LDA_INDX:
+            break;
+        case instructions.INS_LDA_INDY:
             break;
 
         default:

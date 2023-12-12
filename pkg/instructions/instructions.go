@@ -10,5 +10,11 @@ const (
     // (important for space saving) and one less memory fetch during execution (important for speed).
     INS_LDA_ZP = 0xA5
     INS_LDA_ZPX = 0xB5
+    INS_LDA_ABS = 0xAD
+    INS_LDA_ABSX = 0xBD
+    INS_LDA_ABSY = 0xB9
+    INS_LDA_INDX = 0xA1
+    INS_LDA_INDY = 0xB1
+
     INS_JSR = 0x20
 )
