@@ -1,8 +1,5 @@
 package main
 
-import (
-)
-
 // References
 
 // http://www.6502.org/users/obelisk/
@@ -13,6 +10,5 @@ import (
 
 
 func main() {
-
 
 }

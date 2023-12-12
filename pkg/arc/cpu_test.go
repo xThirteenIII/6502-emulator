@@ -5,12 +5,12 @@ import (
 	"testing"
 )
 
-// Tests if the LDA instruction loads a value succeffully into the A register
+// Tests if the LDA instruction loads a value succefully into the A register
 func TestLDAImmCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x82)
 
-    cpu := CPU{}
+    cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
@@ -41,12 +41,12 @@ func TestLDAImmCanLoadIntoARegister(t *testing.T){
     }
 }
 
-// Tests if the LDA_ZP instruction loads a value succeffully into the A register
+// Tests if the LDA_ZP instruction loads a value succefully into the A register
 func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x82)
 
-    cpu := CPU{}
+    cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
@@ -66,12 +66,12 @@ func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
     }
 }
 
-// Tests if the LDA_ZPX instruction loads a value succeffully into the A register
+// Tests if the LDA_ZPX instruction loads a value succefully into the A register
 func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x82)
 
-    cpu := CPU{}
+    cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 

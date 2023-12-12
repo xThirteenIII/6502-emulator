@@ -116,14 +116,17 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
 
         // Fetch instruction, takes up one clock cycle
-        ins, err := cpu.FetchByte(cycles)
+        /*LOOP:*/ ins, err := cpu.FetchByte(cycles)
+
         if err != nil {
             return err
         }
         
-        // Execute code based on the opcode
+        // Decode instruction
         switch (ins) {
 
+
+            // Execute operations based on the instruction opcode
         case instructions.INS_LDA_IM:
 
             // Load value into A
@@ -136,6 +139,9 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 2
+            // Total bytes: 2
             break;
 
         case instructions.INS_LDA_ZP:
@@ -156,6 +162,9 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 3
+            // Total bytes: 2
             break;
 
         case instructions.INS_LDA_ZPX:
@@ -167,18 +176,22 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // TODO: handle address overflow
             // The address calculation wraps around if the sum of the base address and the register exceed $FF.
             // ZeroPage address $80 and $FF in the X register then the accumulator will be loaded from $007F (e.g. $80 + $FF => $7F) and not $017F.
-            // why like this? just to be 4 cycles?
-            *cycles--
-            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress+cpu.X))
+
+            // Does adding X to ZP take one cycle?
+            AddRegValueToTarget8Address(cpu.X, &zeroPageAddress, cycles)
+            cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
 
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 4
+            // Total bytes: 2
             break;
 
         case instructions.INS_JSR:
 
             // Fetch the targetMemoryAddress, which is where we have to jump to
-            targetMemoryAddress, err := cpu.FetchWord(cycles)
+            targetAddress, err := cpu.FetchWord(cycles)
             if err != nil {
                 return err
             }
@@ -187,39 +200,85 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.Memory.WriteWord(cycles, cpu.SP, cpu.PC-1)
             cpu.SP++
 
-            cpu.PC = targetMemoryAddress
+            cpu.PC = targetAddress
             *cycles--
+
+            // Total cycles: 6
+            // Total bytes: 3
 
             break;
         case instructions.INS_LDA_ABS:
 
             // Fetch the target location using a full 16 bit address
-            address, err := cpu.FetchWord(cycles)
+            targetAddress, err := cpu.FetchWord(cycles)
             if err != nil {
                 fmt.Println("Error while fetching byte: ",err.Error())
             }
 
             // Load value at the target location into the A register
-            cpu.A = cpu.ReadByte(cycles, address)
+            cpu.A = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 4
+            // Total bytes: 3
             break;
         case instructions.INS_LDA_ABSX:
+
+            // Fetch 16-bit address
+            targetAddress, err := cpu.FetchWord(cycles) 
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // Add X value to the fetched address
+            AddRegValueToTarget16Address(cpu.X, &targetAddress, cycles)
+
+
+            // Load value stored at the address+X into the A register
+            cpu.A = cpu.ReadByte(cycles, targetAddress)
+
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
             break;
         case instructions.INS_LDA_ABSY:
+
+            // Fetch 16-bit address
+            targetAddress, err := cpu.FetchWord(cycles) 
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // Add X value to the fetched address
+            AddRegValueToTarget16Address(cpu.Y, &targetAddress, cycles)
+
+
+            // Load value stored at the address+X into the A register
+            cpu.A = cpu.ReadByte(cycles, targetAddress)
+
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
             break;
         case instructions.INS_LDA_INDX:
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 6
+            // Total bytes: 2
             break;
         case instructions.INS_LDA_INDY:
             // Set LDA status flags
             LDASetStatus(cpu)
+
+            // Total cycles: 5(+1 if page crossed)
+            // Total bytes: 2
             break;
 
         default:
@@ -243,4 +302,42 @@ func LDASetStatus(cpu *CPU) {
             if (cpu.A & byte(1 << 7) != 0) {
                 cpu.PS.N = 1
             }
+}
+
+func ZeroPageWrapAround(value byte, address *byte) {
+
+    // If the sum of the address and the value exceeds 0xFF, wrap around.
+    // E.g. if I have to add 0x80 to 0xFF it results in 0x7F and not 0x017F
+
+    // Use modulo operator to get the wrapped around value.
+    *address = byte(uint16(value + *address) % 0x100)
+}
+
+func AddRegValueToTarget16Address(value byte, address *uint16, cycles *int){
+
+    // "+1 if page crossed": a page boundary is crossed if the high byte of the original absolute address is
+    // different from the high byte of the calculated address after adding the X register.
+    // If a page boundary is crossed, an additional cycle is required.
+
+    originalHighByte := (*address >> 8)
+    
+    // Add value to address
+    *address += uint16(value)
+
+    newHighByte := (*address >> 8)
+
+
+    if originalHighByte != newHighByte {
+        *cycles--
+    }
+
+    *cycles--
+}
+
+func AddRegValueToTarget8Address(value byte, address *byte, cycles *int){
+
+    // "+1 if page crossed" can't happen
+
+    *address += value
+    *cycles--
 }
