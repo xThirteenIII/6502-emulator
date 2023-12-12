@@ -134,6 +134,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
                 fmt.Println("Error while fetching byte: ", err.Error())
             }
 
+            // Set LDA status flags
             LDASetStatus(cpu)
             break;
 
@@ -153,6 +154,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // Load the data at the zeroPageAddress in the A register
             cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
 
+            // Set LDA status flags
             LDASetStatus(cpu)
             break;
 
@@ -169,6 +171,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             *cycles--
             cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress+cpu.X))
 
+            // Set LDA status flags
             LDASetStatus(cpu)
             break;
 
@@ -190,21 +193,33 @@ func (cpu *CPU) Execute( cycles *int ) error {
             break;
         case instructions.INS_LDA_ABS:
 
+            // Fetch the target location using a full 16 bit address
             address, err := cpu.FetchWord(cycles)
             if err != nil {
                 fmt.Println("Error while fetching byte: ",err.Error())
             }
-            cpu.A = cpu.Memory.Data[address]
 
+            // Load value at the target location into the A register
+            cpu.A = cpu.ReadByte(cycles, address)
 
+            // Set LDA status flags
+            LDASetStatus(cpu)
             break;
         case instructions.INS_LDA_ABSX:
+            // Set LDA status flags
+            LDASetStatus(cpu)
             break;
         case instructions.INS_LDA_ABSY:
+            // Set LDA status flags
+            LDASetStatus(cpu)
             break;
         case instructions.INS_LDA_INDX:
+            // Set LDA status flags
+            LDASetStatus(cpu)
             break;
         case instructions.INS_LDA_INDY:
+            // Set LDA status flags
+            LDASetStatus(cpu)
             break;
 
         default:
