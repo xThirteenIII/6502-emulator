@@ -2,6 +2,8 @@ package instructions
 
 // Opcodes
 const (
+
+    // Load/Store Operations
     INS_LDA_IM = 0xA9
 
     // An instruction using zero page addressing mode has only an 8 bit address operand.
@@ -16,5 +18,23 @@ const (
     INS_LDA_INDX = 0xA1
     INS_LDA_INDY = 0xB1
 
+    INS_LDX_IM = 0xA2
+    INS_LDX_ZP = 0xA6
+    INS_LDX_ZPY = 0xB6
+    INS_LDX_ABS = 0xAE
+    INS_LDX_ABSY = 0xBE
+
+    // Register Transfers
+    // Stack Operations
+    // Logical
+    // Arithmetic
+    // Increments & Decrements
+    // Shifts
+    // Jump & Calls
     INS_JSR = 0x20
+
+    // Branches
+    // Status Flag Changes
+    // System Functions
+
 )
