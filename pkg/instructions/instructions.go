@@ -38,6 +38,9 @@ const (
     INS_STA_INDX = 0x81
     INS_STA_INDY = 0x91
 
+    INS_STX_ZP = 0x86
+    INS_STX_ZPY = 0x96
+    INS_STX_ABS = 0x8E
     // Register Transfers
     // Stack Operations
     // Logical

@@ -674,6 +674,53 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             break;
 
+        case instructions.INS_STX_ZP:
+
+            var err error
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            cpu.Memory.WriteByte(cycles, cpu.X, uint16(zeroPageAddress))
+            
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_STX_ZPY:
+
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // TODO: handle address overflow
+            // Wrap Around
+            zeroPageAddress = byte(uint16(cpu.Y + zeroPageAddress) % 0x100)
+            *cycles--
+
+            cpu.Memory.WriteByte(cycles, cpu.X, uint16(zeroPageAddress))
+
+            // Total cycles: 4
+            // Total bytes: 2
+
+            break;
+
+        case instructions.INS_STX_ABS:
+
+            // Fetch the target location using a full 16 bit address
+            targetAddress, err := cpu.FetchWord(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            cpu.Memory.WriteByte(cycles, cpu.X, targetAddress)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+
         default:
             log.Fatalln("Unknown opcode: ", ins)
         }
