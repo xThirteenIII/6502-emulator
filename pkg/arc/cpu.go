@@ -509,6 +509,145 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
         case instructions.INS_STA_ZP:
 
+            var err error
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            cpu.Memory.WriteByte(cycles, cpu.A, uint16(zeroPageAddress))
+            
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_STA_ZPX:
+
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // TODO: handle address overflow
+            // Wrap Around
+            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
+            *cycles--
+
+            cpu.Memory.WriteByte(cycles, cpu.A, uint16(zeroPageAddress))
+
+            // Total cycles: 4
+            // Total bytes: 2
+
+            break;
+
+        case instructions.INS_STA_ABS:
+
+            // Fetch the target location using a full 16 bit address
+            targetAddress, err := cpu.FetchWord(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            cpu.Memory.WriteByte(cycles, cpu.A, targetAddress)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_STA_ABSX:
+
+            // Fetch the target location using a full 16 bit address
+            targetAddress, err := cpu.FetchWord(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // Add X to the target address
+            // AddRegValueToTarget16Address() not used because totale cycles amount to 5, 
+            // independently from page crossing.
+            targetAddress += uint16(cpu.X)
+            *cycles--
+
+            cpu.Memory.WriteByte(cycles, cpu.A, targetAddress)
+
+            // Total cycles: 5
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_STA_ABSY:
+
+            // Fetch the target location using a full 16 bit address
+            targetAddress, err := cpu.FetchWord(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // Add Y to the target address
+            // AddRegValueToTarget16Address() not used because totale cycles amount to 5, 
+            // independently from page crossing.
+            targetAddress += uint16(cpu.Y)
+            *cycles--
+
+            cpu.Memory.WriteByte(cycles, cpu.A, targetAddress)
+
+            // Total cycles: 5
+            // Total bytes: 3
+            break;
+
+
+        case instructions.INS_STA_INDX:
+
+            // In this mode the X register is used to offste the zero page vector,
+            // used to determine the effective address.
+            // Put another way, the vector is chosen by adding the value in the X register,
+            // to the given zero page address.
+            // The resulting zero page address is the vector from which the effective address is read.
+            // Weird stuff.
+
+            // Example:
+            // LDX #$04
+            // LDA ($02, X)
+
+            // In the above case X is loaded with four, so the vector is calculated with 
+            // $02 + $04 = $06 (resulting vector)
+            // If the zero page memory $06 contains: 00 80, then the effective address from the vector (06)
+            // would be $8000
+
+            // Fetch the Zero Page Address
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            // Wrap Around
+            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
+            *cycles--
+
+            // The effective address is the 
+            effectiveAddress := cpu.ReadWord(cycles, uint16(zeroPageAddress))
+
+            cpu.Memory.WriteByte(cycles, cpu.A, effectiveAddress)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+        case instructions.INS_STA_INDY:
+
+            // Fetch the Zero Page Address
+            zeroPageAddress, err := cpu.FetchByte(cycles)
+            if err != nil {
+                fmt.Println("Error while fetching byte: ",err.Error())
+            }
+
+            effectiveAddress := cpu.ReadWord(cycles, uint16(zeroPageAddress))
+
+            // Add Y to the Zero Page Address
+            AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, cycles)
+
+            cpu.Memory.WriteByte(cycles, cpu.A, effectiveAddress)
+
+            // Total cycles: 6
+            // Total bytes: 2
             break;
 
         case instructions.INS_JSR:
