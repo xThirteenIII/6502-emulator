@@ -138,7 +138,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             }
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 2
             // Total bytes: 2
@@ -161,7 +161,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, uint16(zeroPageAddress))
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -183,7 +183,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -200,7 +200,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -222,7 +222,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -243,7 +243,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -282,7 +282,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, effectiveAddress)
             // Set LDA status flags
 
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 6
             // Total bytes: 2
@@ -303,7 +303,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.A = cpu.ReadByte(cycles, effectiveAddress)
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.A)
 
             // Total cycles: 5(+1 if page crossed)
             // Total bytes: 2
@@ -318,7 +318,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             }
 
             // Set LDX status flags
-            LDXSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 2
             // Total bytes: 2
@@ -341,7 +341,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.X = cpu.ReadByte(cycles, uint16(zeroPageAddress))
 
             // Set LDX status flags
-            LDXSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -363,7 +363,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
 
             // Set LDX status flags
-            LDXSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -380,7 +380,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.X = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDXSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -402,7 +402,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.Y = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDASetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -417,7 +417,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             }
 
             // Set LDX status flags
-            LDYSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
 
             // Total cycles: 2
             // Total bytes: 2
@@ -440,7 +440,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.Y = cpu.ReadByte(cycles, uint16(zeroPageAddress))
 
             // Set LDX status flags
-            LDYSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -462,7 +462,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
 
             // Set LDX status flags
-            LDYSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -479,7 +479,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.Y = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDYSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -501,7 +501,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
             cpu.Y = cpu.ReadByte(cycles, targetAddress)
 
             // Set LDA status flags
-            LDYSetStatus(cpu)
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -650,30 +650,6 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // Total bytes: 2
             break;
 
-        case instructions.INS_JSR:
-
-            // Fetch the targetMemoryAddress, which is where we have to jump to
-            targetAddress, err := cpu.FetchWord(cycles)
-            if err != nil {
-                return err
-            }
-
-            // Set cpu.SP 16-bit, which is 0100 + cpu.SP (8 bit)
-
-            SP := uint16(cpu.SP) + 0x0100
-
-            // PC - 1 is the return address, where we return after the subRoutine exec
-            cpu.Memory.WriteWord(cycles, SP, cpu.PC-1)
-            cpu.SP++
-
-            cpu.PC = targetAddress
-            *cycles--
-
-            // Total cycles: 6
-            // Total bytes: 3
-
-            break;
-
         case instructions.INS_STX_ZP:
 
             var err error
@@ -767,6 +743,50 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // Total cycles: 4
             // Total bytes: 3
             break;
+
+        case instructions.INS_TAX_IMP:
+
+            // Copy the current contents of the accumulator into the X register and sets the zero and negative flags as appropriate.
+            // Implicit:
+            // For many 6502 instructions the source and destination of the information to be manipulated
+            // is implied directly by the function of the instruction itself and no further operand needs to be specified.
+            // Operations like 'Clear Carry Flag' (CLC) and 'Return from Subroutine' (RTS) are implicit.
+
+            cpu.X = cpu.A
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+
+
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
+
+        case instructions.INS_JSR:
+
+            // Fetch the targetMemoryAddress, which is where we have to jump to
+            targetAddress, err := cpu.FetchWord(cycles)
+            if err != nil {
+                return err
+            }
+
+            // Set cpu.SP 16-bit, which is 0100 + cpu.SP (8 bit)
+
+            SP := uint16(cpu.SP) + 0x0100
+
+            // PC - 1 is the return address, where we return after the subRoutine exec
+            cpu.Memory.WriteWord(cycles, SP, cpu.PC-1)
+            cpu.SP++
+
+            cpu.PC = targetAddress
+            *cycles--
+
+            // Total cycles: 6
+            // Total bytes: 3
+
+            break;
+
         default:
             log.Fatalln("Unknown opcode: ", ins)
         }
@@ -775,47 +795,17 @@ func (cpu *CPU) Execute( cycles *int ) error {
     return nil
 }
 
-func LDASetStatus(cpu *CPU) {
+func SetZeroAndNegativeFlags(cpu *CPU, register byte) {
 
             // Set Z flag if A is 0
-            if cpu.A == 0 {
+            if register == 0 {
                 cpu.PS.Z = 1
             }
 
             // Set N flag if the bit 7 of A is set
             // byte(1 << 7) is a bitmask that has the 7 bit set to 1
             // it left-shifts the 00000001 seven positions left
-            if (cpu.A & byte(1 << 7) != 0) {
-                cpu.PS.N = 1
-            }
-}
-
-func LDXSetStatus(cpu *CPU) {
-
-            // Set Z flag if X is 0
-            if cpu.X == 0 {
-                cpu.PS.Z = 1
-            }
-
-            // Set N flag if the bit 7 of X is set
-            // byte(1 << 7) is a bitmask that has the 7 bit set to 1
-            // it left-shifts the 00000001 seven positions left
-            if (cpu.X & byte(1 << 7) != 0) {
-                cpu.PS.N = 1
-            }
-}
-
-func LDYSetStatus(cpu *CPU) {
-
-            // Set Z flag if Y is 0
-            if cpu.Y == 0 {
-                cpu.PS.Z = 1
-            }
-
-            // Set N flag if the bit 7 of Y is set
-            // byte(1 << 7) is a bitmask that has the 7 bit set to 1
-            // it left-shifts the 00000001 seven positions left
-            if (cpu.Y & byte(1 << 7) != 0) {
+            if (register & byte(1 << 7) != 0) {
                 cpu.PS.N = 1
             }
 }

@@ -47,6 +47,8 @@ const (
     INS_STY_ABS = 0x8C
 
     // Register Transfers
+
+    INS_TAX_IMP = 0xAA
     // Stack Operations
     // Logical
     // Arithmetic
