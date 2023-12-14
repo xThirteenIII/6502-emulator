@@ -754,7 +754,7 @@ func (cpu *CPU) Execute( cycles *int ) error {
 
             cpu.X = cpu.A
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, cpu.X)
 
 
 
@@ -763,6 +763,24 @@ func (cpu *CPU) Execute( cycles *int ) error {
             // Total bytes: 1
             break;
 
+        case instructions.INS_TAY_IMP:
+
+            // Copy the current contents of the accumulator into the X register and sets the zero and negative flags as appropriate.
+            // Implicit:
+            // For many 6502 instructions the source and destination of the information to be manipulated
+            // is implied directly by the function of the instruction itself and no further operand needs to be specified.
+            // Operations like 'Clear Carry Flag' (CLC) and 'Return from Subroutine' (RTS) are implicit.
+
+            cpu.Y = cpu.A
+
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
+
+
+
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
         case instructions.INS_JSR:
 
             // Fetch the targetMemoryAddress, which is where we have to jump to

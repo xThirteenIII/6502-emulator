@@ -49,6 +49,8 @@ const (
     // Register Transfers
 
     INS_TAX_IMP = 0xAA
+
+    INS_TAY_IMP = 0xA8
     // Stack Operations
     // Logical
     // Arithmetic
