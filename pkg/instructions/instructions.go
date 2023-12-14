@@ -41,6 +41,11 @@ const (
     INS_STX_ZP = 0x86
     INS_STX_ZPY = 0x96
     INS_STX_ABS = 0x8E
+
+    INS_STY_ZP = 0x84
+    INS_STY_ZPX = 0x94
+    INS_STY_ABS = 0x8C
+
     // Register Transfers
     // Stack Operations
     // Logical
