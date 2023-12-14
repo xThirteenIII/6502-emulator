@@ -51,6 +51,8 @@ const (
     INS_TAX_IMP = 0xAA
 
     INS_TAY_IMP = 0xA8
+
+    INS_TSX_IMP = 0xBA
     // Stack Operations
     // Logical
     // Arithmetic
