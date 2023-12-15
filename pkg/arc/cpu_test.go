@@ -10,7 +10,6 @@ func TestCPUResetsCorrectly(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    cpu.Memory.Initialise()
 
     want := &CPU{
         PC: 0xFFFC,
@@ -39,3 +38,21 @@ func TestCPUResetsCorrectly(t *testing.T){
     }
 }
 
+func TestCPUDoesNothingWhenWeExecuteZeroCycles(t *testing.T){
+
+    // given
+    const NUM_CYCLES = 0
+    cpu := &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    // when 
+    cyclesUsed := cpu.Execute(0)
+
+    // then
+    if cyclesUsed != 0 {
+        t.Error("Executing with zero cycles should return 0")
+    }
+    
+
+}
