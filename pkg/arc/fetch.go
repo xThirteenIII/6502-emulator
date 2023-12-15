@@ -16,7 +16,8 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
 
 func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
 
-    // TODO:Check if PC exceeds MAX_MEM
+    // TODO: Check if PC exceeds MAX_MEM
+    // TODO: Handle error
 
     // 6502 is little endian so first byte is the least significant byte of the data
     // Fetch low byte of address

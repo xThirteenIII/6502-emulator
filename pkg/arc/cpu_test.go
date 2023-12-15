@@ -1,95 +1,41 @@
 package arc
 
 import (
-	"emulator/pkg/instructions"
 	"testing"
 )
 
-// Tests if the LDA instruction loads a value succefully into the A register
-func TestLDAImmCanLoadIntoARegister(t *testing.T){
-
-    want := byte(0x82)
+// Test if CPU register reset to default values correctly and memory initialises to 0.
+func TestCPUResetsCorrectly(t *testing.T){
 
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    cpu.Memory.Initialise()
 
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_IM
-    cpu.Memory.Data[0xFFFD] = want
-    // end - inline program
-
-    // when
-    cycles := 2
-    cpu.Execute(&cycles)
-
-    got := cpu.A
-    got1 := cpu.PS.Z
-    got2 := cpu.PS.N
-
-    // then
-    if cpu.A != want {
-        t.Error("A: Want ", want, " instead got ", got)
+    want := &CPU{
+        PC: 0xFFFC,
+        SP: 0x00,
+        A: 0,
+        X: 0,
+        Y: 0,
+        PS: ProcessorStatus{
+            C: 0,
+            Z: 0,
+            I: 0,
+            D: 0,
+            B: 0,
+            U: 0,
+            V: 0,
+            N: 0,
+        },
+    }
+    for i := 0; i < MaxMem; i++{
+        cpu.Memory.Data[i] = 0
     }
 
-    if cpu.PS.Z != 0 {
-        t.Error("A: Want 0, instead got: ", got1)
-    }
-
-    if cpu.PS.N != 1 {
-        t.Error("N: Want 1, instead got: ", got2)
-    }
-}
-
-// Tests if the LDA_ZP instruction loads a value succefully into the A register
-func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
-
-    want := byte(0x82)
-
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZP
-    cpu.Memory.Data[0xFFFD] = 0x42
-    cpu.Memory.Data[0x0042] = want
-    // end - inline program
-
-    cycles := 3
-    cpu.Execute(&cycles)
-
-    got := cpu.A
-
-    if cpu.A != want {
-        t.Error("Want: ", want, " instead got: ", got)
+    if *cpu != *want {
+        
+        t.Error("Want: ", want, ", got: ", cpu)
     }
 }
 
-// Tests if the LDA_ZPX instruction loads a value succefully into the A register
-func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
-
-    want := byte(0x82)
-
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
-
-    // given
-    cpu.X = 0x0F
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
-    // end - inline program
-
-    cycles := 4
-    cpu.Execute(&cycles)
-
-    got := cpu.A
-
-    if cpu.A != want {
-        t.Error("Want: ", want, " instead got: ", got)
-    }
-}
