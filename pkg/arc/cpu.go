@@ -121,6 +121,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
     // method Execute().
     cyclesUsed = cycles
 
+    // Can we get stuck in infinite loop if we pass more cycles than expected?
+    // Not for now because since memory is initialised to 0, if we try to fetch a 
+    // byte from one more cell memory where we are not supposed to be, it fetches 0 and
+    // exits the switch loop with the default case
     for cycles > 0 {
 
 
@@ -830,6 +834,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
 
         default:
+            log.Println("At memory address: ", cpu.PC)
+
+            // TODO: Should it stop and Fatal or just keep going till next valid instruction?
             log.Fatalln("Unknown opcode: ", ins)
         }
     }
