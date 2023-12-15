@@ -8,48 +8,11 @@ import (
 // Test if the LDA instruction loads a value succefully into the A register
 func TestLDAImmCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x72)
-
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    // Make a copy of the cpu to confront uneffected flags
-    // after execution
-    cpuCopy := *cpu
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_IM
-    cpu.Memory.Data[0xFFFD] = want
-    // end - inline program
-
-    // when
-    expectedCycles := 2
-    cyclesUsed := cpu.Execute(expectedCycles)
-
-    if expectedCycles != cyclesUsed{
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
-    }
-
-    gotA := cpu.A
-    gotZ := cpu.PS.Z
-    gotN := cpu.PS.N
-
-    // then
-    if cpu.A != want {
-        t.Error("A: Want ", want, " instead got ", gotA)
-    }
-
-    if cpu.PS.Z != 0 {
-        t.Error("Z: Want 0, instead got: ", gotZ)
-    }
-
-    if cpu.PS.N != 0 {
-        t.Error("N: Want 0, instead got: ", gotN)
-    }
-
-    // Confront uneffected flags
-    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+    CheckLoadRegisterImmediate(cpu, instructions.INS_LDA_IM, &cpu.A,  t)
 }
 
 // Test if the LDA instruction loads 0 succefully into the A register
@@ -394,6 +357,46 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
 
 }
 
+// This is used to avoid duplicate code
+// TODO: PROBLEM: when using different instructions, cycles needed might change. 
+// Need a way to handle that and operations
+func CheckLoadRegisterImmediate(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // given
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    cpu.Memory.Data[0xFFFD] = 0x72
+
+    // when
+    cpuCopy := *cpu
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != 0x72 {
+        t.Error("Want: 0x72, got: ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+
+}
+
 // Confront Initial PS Registers values with values after execution.
 // These register shuould remain unmodified
 func CheckUnmodifiedLDAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
@@ -421,5 +424,4 @@ func CheckUnmodifiedLDAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
     if cpu.PS.V != cpuCopy.PS.V {
         t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
     }
-
 }
