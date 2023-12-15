@@ -1,6 +1,7 @@
 package arc
 
 import (
+	"emulator/pkg/instructions"
 	"testing"
 )
 
@@ -55,4 +56,27 @@ func TestCPUDoesNothingWhenWeExecuteZeroCycles(t *testing.T){
     }
     
 
+}
+
+func TestCPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstruction(t *testing.T){
+
+    // given
+    cpu := &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_IM
+    cpu.Memory.Data[0xFFFD] = 0x84
+
+    // when 
+    // LDA_IM should execute 2 cycles anyways
+    const NUM_CYCLES = 1
+    cyclesUsed := cpu.Execute(NUM_CYCLES)
+
+    // then
+    // When executing Execute(1) returns 1 - (-1) = 2 and that should pass the test
+    // Even the parameter passed is 1, it executes required cycles anyways
+    if cyclesUsed != 2 {
+        t.Error("Couldn't run at least 1 cycle")
+    }
 }
