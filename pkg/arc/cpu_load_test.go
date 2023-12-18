@@ -915,6 +915,7 @@ func CheckLoadRegisterAbsoluteYWithPageCrossing(cpu *CPU, opcode int, register *
 
     // When
     cpuCopy := *cpu
+
     // ExpectedCycles is 4+1 due to page crossing
     expectedCycles := 5
     cyclesUsed := cpu.Execute(expectedCycles)

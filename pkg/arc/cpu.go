@@ -739,8 +739,6 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
     // If the number of cycles used is correct, respectively to the instruction used, 
     // the return should be the original value, passed when calling Execute().
-    // That means that if I Execute(4) an LDA_IM instruction, which takes 2 cycles, 
-    // if the code is written correctly, the return value should be 2 - 0 = 2.
     // When testing the instruction, we make sure that the expected value returned by Execute()
     // matches the cycles needed for the instructions, based on official documentation.
     cyclesUsed -= cycles
