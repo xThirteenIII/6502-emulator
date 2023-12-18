@@ -23,6 +23,9 @@ func TestLDXImmCanLoadZeroIntoXRegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 0
+    cpu.PS.N = 1
 
     // Make a copy of the cpu to confront uneffected flags
     // after execution

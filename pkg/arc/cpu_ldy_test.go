@@ -23,6 +23,8 @@ func TestLDYImmCanLoadZeroIntoYRegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    cpu.PS.Z = 0
+    cpu.PS.N = 1
 
     // Make a copy of the cpu to confront uneffected flags
     // after execution
