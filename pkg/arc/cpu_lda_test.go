@@ -101,6 +101,9 @@ func TestLDAAbsoluteCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterAbsolute(cpu, instructions.INS_LDA_ABS, &cpu.A, t)
 }
@@ -111,6 +114,9 @@ func TestLDAAbsoluteXCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteX(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 }
@@ -120,6 +126,9 @@ func TestLDAAsboluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteXWithPageCrossing(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 
@@ -131,6 +140,9 @@ func TestLDAAbsoluteYCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteY(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 }
@@ -140,6 +152,9 @@ func TestLDAAsboluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteYWithPageCrossing(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 
@@ -161,6 +176,9 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     cpuCopy := *cpu
 
@@ -184,9 +202,19 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
 
 
     got := cpu.A
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
 
     if cpu.A != want {
         t.Error("Want: ", want, " instead got: ", got)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
     }
 
     // Confront uneffected flags
@@ -224,9 +252,19 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
 
 
     got := cpu.A
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
 
     if cpu.A != want {
         t.Error("Want: ", want, " instead got: ", got)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
     }
 
     // Confront uneffected flags
@@ -265,9 +303,19 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
 
 
     got := cpu.A
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
 
     if cpu.A != want {
         t.Error("Want: ", want, " instead got: ", got)
+    }
+    
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
     }
 
     // Confront uneffected flags
