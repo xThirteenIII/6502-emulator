@@ -80,7 +80,7 @@ func TestLDXZeroPageYCanLoadIntoXRegister(t *testing.T){
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDX_ZPY, &cpu.X, t)
+    CheckLoadRegisterZeroPageY(cpu, instructions.INS_LDX_ZPY, &cpu.X, t)
 }
 
 // Test if the LDX_ABS instruction loads a value succefully into the X register
