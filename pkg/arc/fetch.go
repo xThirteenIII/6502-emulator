@@ -7,9 +7,9 @@ import (
 // FetchByte reads the byte located at the PC address
 // It increases the program counter and decrements clock cycles by 1
 // It return an error if PC exceeds max memory (65535 B)
-func (cpu *CPU) FetchByte( cycles *int) (byte, error){
+func (cpu *CPU) FetchByte( cycles *int) byte{
 
-    // TODO:Check if PC exceeds MAX_MEM
+    // Exceeding max memory halts the cpu (Fatal log)
     if cpu.PC > MaxMem-1 {
         log.Fatalf("Program Counter exceeded max memory")
     }
@@ -18,10 +18,10 @@ func (cpu *CPU) FetchByte( cycles *int) (byte, error){
     cpu.PC++
     *cycles--
 
-    return data, nil
+    return data
 }
 
-func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
+func (cpu *CPU) FetchWord( cycles *int) uint16{
 
     // TODO: Check if PC exceeds MAX_MEM
     // TODO: Handle error
@@ -43,5 +43,5 @@ func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
     cpu.PC++
     *cycles--
 
-    return data, nil
+    return data
 }
