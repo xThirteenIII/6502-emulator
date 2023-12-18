@@ -76,175 +76,64 @@ func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
 // Test if the LDA_ZPX instruction loads a value succefully into the A register
 func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x72)
-
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    cpuCopy := *cpu
-
-    // given
-    cpu.X = 0x0F
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
-    // end - inline program
-
-    expectedCycles := 4
-    cyclesUsed := cpu.Execute(expectedCycles)
-
-    if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
-    }
-
-
-    gotA := cpu.A
-    gotZ := cpu.PS.Z
-    gotN := cpu.PS.N
-
-    // then
-    if cpu.A != want {
-        t.Error("A: Want ", want, " instead got ", gotA)
-    }
-
-    if cpu.PS.Z != 0 {
-        t.Error("Z: Want 0, instead got: ", gotZ)
-    }
-
-    if cpu.PS.N != 0 {
-        t.Error("N: Want 0, instead got: ", gotN)
-    }
-
-    // Confront uneffected flags
-    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+    CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDA_ZPX, &cpu.A, t)
 }
 
 // Test if the LDA_ABS instruction loads a value succefully into the A register
 func TestLDAAbsoluteCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x72)
-
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    cpuCopy := *cpu
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ABS
-    // LSB
-    cpu.Memory.Data[0xFFFD] = 0x80
-    // MSB
-    cpu.Memory.Data[0xFFFE] = 0x44
-    cpu.Memory.Data[0x4480] = want
-    // end - inline program
-
-    expectedCycles := 4
-    cyclesUsed := cpu.Execute(expectedCycles)
-
-    if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
-    }
-
-
-    gotA := cpu.A
-    gotZ := cpu.PS.Z
-    gotN := cpu.PS.N
-
-    // then
-    if cpu.A != want {
-        t.Error("A: Want ", want, " instead got ", gotA)
-    }
-
-    if cpu.PS.Z != 0 {
-        t.Error("Z: Want 0, instead got: ", gotZ)
-    }
-
-    if cpu.PS.N != 0 {
-        t.Error("N: Want 0, instead got: ", gotN)
-    }
-
-    // Confront uneffected flags
-    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+    CheckLoadRegisterAbsolute(cpu, instructions.INS_LDA_ABS, &cpu.A, t)
 }
+
 // Test if the LDA_ZPX instruction loads a value succefully into the A register
 func TestLDAAbsoluteXCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x82)
+    cpu := &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    CheckLoadRegisterAbsoluteX(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
+}
+
+func TestLDAAsboluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    cpuCopy := *cpu
+    CheckLoadRegisterAbsoluteXWithPageCrossing(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 
-    // given
-    cpu.X = 0x0F
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
-    // end - inline program
-
-    expectedCycles := 4
-    cyclesUsed := cpu.Execute(expectedCycles)
-
-    if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
-    }
-
-
-    got := cpu.A
-
-    if cpu.A != want {
-        t.Error("Want: ", want, " instead got: ", got)
-    }
-
-    // Confront uneffected flags
-    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
+
 // Test if the LDA_ABSY instruction loads a value succefully into the A register
 func TestLDAAbsoluteYCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x82)
+    cpu := &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    CheckLoadRegisterAbsoluteY(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
+}
+
+func TestLDAAsboluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
 
-    cpuCopy := *cpu
+    CheckLoadRegisterAbsoluteYWithPageCrossing(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 
-    // given
-    cpu.X = 0x0F
-
-    // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
-    // end - inline program
-
-    expectedCycles := 4
-    cyclesUsed := cpu.Execute(expectedCycles)
-
-    if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
-    }
-
-
-    got := cpu.A
-
-    if cpu.A != want {
-        t.Error("Want: ", want, " instead got: ", got)
-    }
-
-    // Confront uneffected flags
-    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
-// Test if the LDA_ZPX instruction loads a value succefully into the A register
+
+// Test if the LDA_INDX instruction loads a value succefully into the A register
 func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x82)
@@ -282,7 +171,7 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 
-// Test if the LDA_ZPX instruction loads a value succefully into the A register
+// Test if the LDA_INDY instruction loads a value succefully into the A register
 func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x82)
@@ -402,6 +291,307 @@ func CheckLoadRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing.
 
 }
 
+// This is used to avoid duplicate code
+// TODO: PROBLEM: when using different instructions, cycles needed might change. 
+// Need a way to handle that and operations
+func CheckLoadRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // given
+    cpu.X = 5
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    cpu.Memory.Data[0xFFFD] = 0x72
+    // Add 5 to 0x72
+    cpu.Memory.Data[0x0077] = 0x44
+
+    // when
+    cpuCopy := *cpu
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != 0x44 {
+        t.Error("Want: 0x44, got: ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func CheckLoadRegisterZeroPageY(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // given
+    cpu.Y = 5
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    cpu.Memory.Data[0xFFFD] = 0x72
+    // Add 5 to 0x72
+    cpu.Memory.Data[0x0077] = 0x44
+
+    // when
+    cpuCopy := *cpu
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != 0x44 {
+        t.Error("Want: 0x44, got: ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func CheckLoadRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    want := byte(0x32)
+
+    // Given
+    // start - inline program
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    // LSB
+    cpu.Memory.Data[0xFFFD] = 0x80
+    // MSB
+    cpu.Memory.Data[0xFFFE] = 0x44
+    cpu.Memory.Data[0x4480] = want
+    // end - inline program
+
+    // When
+    cpuCopy := *cpu
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != want {
+        t.Error("A: Want ", want, " instead got ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func CheckLoadRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    want := byte(0x32)
+
+    // Given
+    // start - inline program
+    cpu.X = 1
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    // LSB
+    cpu.Memory.Data[0xFFFD] = 0x80
+    // MSB
+    cpu.Memory.Data[0xFFFE] = 0x44
+    cpu.Memory.Data[0x4481] = want
+    // end - inline program
+
+    // When
+    cpuCopy := *cpu
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != want {
+        t.Error("A: Want ", want, " instead got ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+func CheckLoadRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    want := byte(0x32)
+
+    // Given
+    // start - inline program
+    cpu.Y = 1
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    // LSB
+    cpu.Memory.Data[0xFFFD] = 0x80
+    // MSB
+    cpu.Memory.Data[0xFFFE] = 0x44
+    cpu.Memory.Data[0x4481] = want
+    // end - inline program
+
+    // When
+    cpuCopy := *cpu
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != want {
+        t.Error("A: Want ", want, " instead got ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func CheckLoadRegisterAbsoluteXWithPageCrossing(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    want := byte(0x32)
+
+    // Given
+    // start - inline program
+    cpu.X = 0xFF
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    // LSB
+    cpu.Memory.Data[0xFFFD] = 0x80
+    // MSB
+    cpu.Memory.Data[0xFFFE] = 0x44
+    cpu.Memory.Data[0x457F] = want
+    // end - inline program
+
+    // When
+    cpuCopy := *cpu
+    // ExpectedCycles is 4+1 due to page crossing
+    expectedCycles := 5
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != want {
+        t.Error("A: Want ", want, " instead got ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+
+}
+
+
+func CheckLoadRegisterAbsoluteYWithPageCrossing(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    want := byte(0x32)
+
+    // Given
+    // start - inline program
+    cpu.Y = 0xFF
+    cpu.Memory.Data[0xFFFC] = byte(opcode)
+    // LSB
+    cpu.Memory.Data[0xFFFD] = 0x80
+    // MSB
+    cpu.Memory.Data[0xFFFE] = 0x44
+    cpu.Memory.Data[0x457F] = want
+    // end - inline program
+
+    // When
+    cpuCopy := *cpu
+    // ExpectedCycles is 4+1 due to page crossing
+    expectedCycles := 5
+    cyclesUsed := cpu.Execute(expectedCycles)
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+    gotZ := cpu.PS.Z
+    gotN := cpu.PS.N
+
+    // then
+    if *register != want {
+        t.Error("A: Want ", want, " instead got ", *register)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Z: Want 0, instead got: ", gotZ)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("N: Want 0, instead got: ", gotN)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
 // Confront Initial PS Registers values with values after execution.
 // These register shuould remain unmodified
 func CheckUnmodifiedLDAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
