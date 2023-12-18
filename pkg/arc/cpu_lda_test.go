@@ -11,9 +11,6 @@ func TestLDAImmCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterImmediate(cpu, instructions.INS_LDA_IM, &cpu.A,  t)
 }
@@ -26,7 +23,6 @@ func TestLDAImmCanLoadZeroIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
     cpu.PS.Z = 0
     cpu.PS.N = 1
 
@@ -75,9 +71,6 @@ func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterZeroPage(cpu, instructions.INS_LDA_ZP, &cpu.A, t)
 }
@@ -88,9 +81,6 @@ func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDA_ZPX, &cpu.A, t)
 }
@@ -101,9 +91,6 @@ func TestLDAAbsoluteCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterAbsolute(cpu, instructions.INS_LDA_ABS, &cpu.A, t)
 }
@@ -114,9 +101,6 @@ func TestLDAAbsoluteXCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteX(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 }
@@ -126,9 +110,6 @@ func TestLDAAsboluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteXWithPageCrossing(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 
@@ -140,9 +121,6 @@ func TestLDAAbsoluteYCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteY(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 }
@@ -152,9 +130,6 @@ func TestLDAAsboluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     CheckLoadRegisterAbsoluteYWithPageCrossing(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 
@@ -176,9 +151,6 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
-    // Make sure executing the instruction changes the flags
-    cpu.PS.Z = 1
-    cpu.PS.N = 1
 
     cpuCopy := *cpu
 
@@ -229,6 +201,8 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     cpuCopy := *cpu
 
@@ -280,6 +254,8 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     cpuCopy := *cpu
 
@@ -328,6 +304,9 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
 // Need a way to handle that and operations
 func CheckLoadRegisterImmediate(cpu *CPU, opcode int, register *byte, t *testing.T){
 
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
     // given
     cpu.Memory.Data[0xFFFC] = byte(opcode)
     cpu.Memory.Data[0xFFFD] = 0x72
@@ -367,6 +346,10 @@ func CheckLoadRegisterImmediate(cpu *CPU, opcode int, register *byte, t *testing
 // TODO: PROBLEM: when using different instructions, cycles needed might change. 
 // Need a way to handle that and operations
 func CheckLoadRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     // given
     cpu.Memory.Data[0xFFFC] = byte(opcode)
@@ -409,6 +392,10 @@ func CheckLoadRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing.
 // Need a way to handle that and operations
 func CheckLoadRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testing.T){
 
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
+
     // given
     cpu.X = 5
     cpu.Memory.Data[0xFFFC] = byte(opcode)
@@ -448,6 +435,10 @@ func CheckLoadRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testing
 
 func CheckLoadRegisterZeroPageY(cpu *CPU, opcode int, register *byte, t *testing.T){
 
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
+
     // given
     cpu.Y = 5
     cpu.Memory.Data[0xFFFC] = byte(opcode)
@@ -486,6 +477,10 @@ func CheckLoadRegisterZeroPageY(cpu *CPU, opcode int, register *byte, t *testing
 }
 
 func CheckLoadRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     want := byte(0x32)
 
@@ -530,6 +525,10 @@ func CheckLoadRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing.
 
 func CheckLoadRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testing.T){
 
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
+
     want := byte(0x32)
 
     // Given
@@ -572,6 +571,10 @@ func CheckLoadRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testing
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 func CheckLoadRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     want := byte(0x32)
 
@@ -616,6 +619,10 @@ func CheckLoadRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testing
 }
 
 func CheckLoadRegisterAbsoluteXWithPageCrossing(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     want := byte(0x32)
 
@@ -663,6 +670,10 @@ func CheckLoadRegisterAbsoluteXWithPageCrossing(cpu *CPU, opcode int, register *
 
 
 func CheckLoadRegisterAbsoluteYWithPageCrossing(cpu *CPU, opcode int, register *byte, t *testing.T){
+
+    // Make sure flags registers are changed when executing to correct values
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     want := byte(0x32)
 
