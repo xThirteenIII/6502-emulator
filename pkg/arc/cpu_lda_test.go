@@ -11,6 +11,9 @@ func TestLDAImmCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterImmediate(cpu, instructions.INS_LDA_IM, &cpu.A,  t)
 }
@@ -23,6 +26,9 @@ func TestLDAImmCanLoadZeroIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 0
+    cpu.PS.N = 1
 
     // Make a copy of the cpu to confront uneffected flags
     // after execution
@@ -69,6 +75,9 @@ func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterZeroPage(cpu, instructions.INS_LDA_ZP, &cpu.A, t)
 }
@@ -79,6 +88,9 @@ func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
     cpu := &CPU{}
     cpu.Memory = Memory{}
     cpu.Reset()
+    // Make sure executing the instruction changes the flags
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
 
     CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDA_ZPX, &cpu.A, t)
 }
