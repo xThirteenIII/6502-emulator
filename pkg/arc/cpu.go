@@ -857,6 +857,8 @@ func SetZeroAndNegativeFlags(cpu *CPU, register byte) {
             // Set Z flag if A is 0
             if register == 0 {
                 cpu.PS.Z = 1
+            }else{
+                cpu.PS.Z = 0
             }
 
             // Set N flag if the bit 7 of A is set
@@ -864,6 +866,8 @@ func SetZeroAndNegativeFlags(cpu *CPU, register byte) {
             // it left-shifts the 00000001 seven positions left
             if (register & byte(1 << 7) != 0) {
                 cpu.PS.N = 1
+            }else {
+                cpu.PS.N = 0
             }
 }
 
