@@ -1,12 +1,19 @@
 package arc
 
+import (
+	"log"
+)
+
 // FetchByte reads the byte located at the PC address
-// It increases the program counter and takes a clock cycle
+// It increases the program counter and decrements clock cycles by 1
+// It return an error if PC exceeds max memory (65535 B)
 func (cpu *CPU) FetchByte( cycles *int) (byte, error){
 
     // TODO:Check if PC exceeds MAX_MEM
+    if cpu.PC > MaxMem-1 {
+        log.Fatalf("Program Counter exceeded max memory")
+    }
     data := cpu.Memory.Data[cpu.PC] 
-
 
     cpu.PC++
     *cycles--
@@ -18,6 +25,10 @@ func (cpu *CPU) FetchWord( cycles *int) (uint16, error){
 
     // TODO: Check if PC exceeds MAX_MEM
     // TODO: Handle error
+    // TODO:Check if PC exceeds MAX_MEM
+    if cpu.PC > MaxMem-1 {
+        log.Fatalf("Program Counter exceeded max memory")
+    }
 
     // 6502 is little endian so first byte is the least significant byte of the data
     // Fetch low byte of address
