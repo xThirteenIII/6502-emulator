@@ -133,10 +133,18 @@ func TestLDAAsboluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
 }
 
+// Example:
+// LDX #$04
+// LDA ($02, X)
+
+// In the above case X is loaded with four, so the vector is calculated with 
+// $02 + $04 = $06 (resulting vector)
+// If the zero page memory $06 contains: 00 80, then the effective address from the vector (06)
+// would be $8000
 // Test if the LDA_INDX instruction loads a value succefully into the A register
 func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x82)
+    want := byte(0x72)
 
     cpu := &CPU{}
     cpu.Memory = Memory{}
@@ -145,15 +153,17 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
     cpuCopy := *cpu
 
     // given
-    cpu.X = 0x0F
+    cpu.X = 0x04
 
     // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_INDX
+    cpu.Memory.Data[0xFFFD] = 0x02
+    cpu.Memory.Data[0x0006] = 0x00
+    cpu.Memory.Data[0x0007] = 0x80
+    cpu.Memory.Data[0x8000] = want
     // end - inline program
 
-    expectedCycles := 4
+    expectedCycles := 6
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
@@ -174,7 +184,7 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
 // Test if the LDA_INDY instruction loads a value succefully into the A register
 func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
 
-    want := byte(0x82)
+    want := byte(0x72)
 
     cpu := &CPU{}
     cpu.Memory = Memory{}
@@ -183,15 +193,58 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
     cpuCopy := *cpu
 
     // given
-    cpu.X = 0x0F
+    cpu.Y = 0x04
 
     // start - inline program
-    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_ZPX
-    cpu.Memory.Data[0xFFFD] = 0x80
-    cpu.Memory.Data[0x008F] = want
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_INDY
+    cpu.Memory.Data[0xFFFD] = 0x02
+    cpu.Memory.Data[0x0002] = 0x00
+    cpu.Memory.Data[0x0003] = 0x80
+    cpu.Memory.Data[0x8004] = want
     // end - inline program
 
-    expectedCycles := 4
+    expectedCycles := 5
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if cyclesUsed != expectedCycles {
+        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+    }
+
+
+    got := cpu.A
+
+    if cpu.A != want {
+        t.Error("Want: ", want, " instead got: ", got)
+    }
+
+    // Confront uneffected flags
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+
+}
+
+// Test if the LDA_INDY instruction loads a value succefully into the A register
+func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
+
+    want := byte(0x72)
+
+    cpu := &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    cpuCopy := *cpu
+
+    // given
+    cpu.Y = 0x04
+
+    // start - inline program
+    cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_INDY
+    cpu.Memory.Data[0xFFFD] = 0x02
+    cpu.Memory.Data[0x0002] = 0xFF
+    cpu.Memory.Data[0x0003] = 0x80
+    cpu.Memory.Data[0x8103] = want
+    // end - inline program
+
+    expectedCycles := 6
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
