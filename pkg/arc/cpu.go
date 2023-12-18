@@ -155,13 +155,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // First cycle to fetch the instruction
             // Second cycle to fetch the address
             // The third cycle to read the data from the address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
             
-            // Load the data at the zeroPageAddress in the A register
-            cpu.A = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.A)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -169,18 +165,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_LDA_ZPX:
 
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
 
-            // TODO: handle address overflow
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
-            cycles--
-
-            cpu.A = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.A)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -188,13 +175,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_LDA_ABS:
 
             // Fetch the target location using a full 16 bit address
-            targetAddress := cpu.FetchWord(&cycles)
+            targetAddress := cpu.AddressAbsolute(&cycles)
 
-            // Load value at the target location into the A register
-            cpu.A = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.A)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -203,35 +186,18 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             // TODO: cycles count it's not right
             // Fetch 16-bit address
-            targetAddress := cpu.FetchWord(&cycles) 
+            targetAddress := cpu.AddressAbsoluteX(&cycles)
 
-            // Add X value to the fetched address
-            AddRegValueToTarget16Address(cpu.X, &targetAddress, &cycles)
-
-
-            // Load value stored at the address+X into the A register
-            cpu.A = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.A)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
             break;
         case instructions.INS_LDA_ABSY:
 
-            // Fetch 16-bit address
-            targetAddress := cpu.FetchWord(&cycles) 
+            targetAddress := cpu.AddressAbsoluteY(&cycles)
 
-            // Add Y value to the fetched address
-            AddRegValueToTarget16Address(cpu.Y, &targetAddress, &cycles)
-
-
-            // Load value stored at the address+X into the A register
-            cpu.A = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.A)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -255,19 +221,12 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // would be $8000
 
             // Fetch the Zero Page Address
-            zeroPageAddress := cpu.FetchByte(&cycles)
-
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
-            cycles--
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
 
             // The effective address is the 
             effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
 
-            cpu.A = cpu.ReadByte(&cycles, effectiveAddress)
-            // Set LDA status flags
-
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles,effectiveAddress, &cpu.A)
 
             // Total cycles: 6
             // Total bytes: 2
@@ -279,13 +238,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
 
-            // Add Y to the Zero Page Address
+            // Add Y to the Effective Address
             AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, &cycles)
 
-            cpu.A = cpu.ReadByte(&cycles, effectiveAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles,effectiveAddress, &cpu.A)
 
             // Total cycles: 5(+1 if page crossed)
             // Total bytes: 2
@@ -310,13 +266,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // First cycle to fetch the instruction
             // Second cycle to fetch the address
             // The third cycle to read the data from the address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
             
-            // Load the data at the zeroPageAddress in the X register
-            cpu.X = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-            // Set LDX status flags
-            SetZeroAndNegativeFlags(cpu, cpu.X)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.X)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -324,32 +276,19 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_LDX_ZPY:
 
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPageY(&cycles)
 
-            // TODO: handle address overflow
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.Y + zeroPageAddress) % 0x100)
-            cycles--
-
-            cpu.X = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-
-            // Set LDX status flags
-            SetZeroAndNegativeFlags(cpu, cpu.X)
-
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.X)
             // Total cycles: 4
             // Total bytes: 2
             break;
+
         case instructions.INS_LDX_ABS:
 
             // Fetch the target location using a full 16 bit address
-            targetAddress := cpu.FetchWord(&cycles)
+            targetAddress := cpu.AddressAbsolute(&cycles)
 
-            // Load value at the target location into the A register
-            cpu.X = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.X)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.X)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -358,23 +297,16 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_LDX_ABSY:
 
             // Fetch 16-bit address
-            targetAddress := cpu.FetchWord(&cycles) 
+            targetAddress := cpu.AddressAbsoluteY(&cycles)
 
-            // Add Y value to the fetched address
-            AddRegValueToTarget16Address(cpu.Y, &targetAddress, &cycles)
-
-
-            // Load value stored at the address+X into the X register
-            cpu.X = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDX status flags
-            SetZeroAndNegativeFlags(cpu, cpu.X)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.X)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
             break;
 
         case instructions.INS_LDY_IM:
+
             // Load value into Y
             cpu.Y = cpu.FetchByte(&cycles)
 
@@ -393,13 +325,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // First cycle to fetch the instruction
             // Second cycle to fetch the address
             // The third cycle to read the data from the address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
             
-            // Load the data at the zeroPageAddress in the Y register
-            cpu.Y = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-            // Set LDX status flags
-            SetZeroAndNegativeFlags(cpu, cpu.Y)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.Y)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -407,18 +335,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_LDY_ZPX:
 
-            zeroPageAddress := cpu.FetchByte(&cycles)
-
-            // TODO: handle address overflow
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
-            cycles--
-
-            cpu.Y = cpu.ReadByte(&cycles, uint16(zeroPageAddress))
-
-
-            // Set LDX status flags
-            SetZeroAndNegativeFlags(cpu, cpu.Y)
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+            
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, zeroPageAddress, &cpu.Y)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -426,32 +345,19 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_LDY_ABS:
 
             // Fetch the target location using a full 16 bit address
-            targetAddress := cpu.FetchWord(&cycles)
+            targetAddress := cpu.AddressAbsolute(&cycles)
 
-            // Load value at the target location into the Y register
-            cpu.Y = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.Y)
-
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.Y)
             // Total cycles: 4
             // Total bytes: 3
             break;
 
         case instructions.INS_LDY_ABSX:
 
-            // Fetch 16-bit address
-            targetAddress := cpu.FetchWord(&cycles) 
+            // Fetch the target location using a full 16 bit address
+            targetAddress := cpu.AddressAbsoluteX(&cycles)
 
-            // Add X value to the fetched address
-            AddRegValueToTarget16Address(cpu.X, &targetAddress, &cycles)
-
-
-            // Load value stored at the address+X into the Y register
-            cpu.Y = cpu.ReadByte(&cycles, targetAddress)
-
-            // Set LDA status flags
-            SetZeroAndNegativeFlags(cpu, cpu.Y)
+            LoadRegisterAndSetStatusFlags(cpu, &cycles, targetAddress, &cpu.Y)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -459,9 +365,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_STA_ZP:
 
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, uint16(zeroPageAddress))
+            cpu.Memory.WriteByte(&cycles, cpu.A, zeroPageAddress)
             
             // Total cycles: 3
             // Total bytes: 2
@@ -469,14 +375,9 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_STA_ZPX:
 
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
 
-            // TODO: handle address overflow
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
-            cycles--
-
-            cpu.Memory.WriteByte(&cycles, cpu.A, uint16(zeroPageAddress))
+            cpu.Memory.WriteByte(&cycles, cpu.A, zeroPageAddress)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -486,7 +387,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_STA_ABS:
 
             // Fetch the target location using a full 16 bit address
-            targetAddress := cpu.FetchWord(&cycles)
+            targetAddress := cpu.AddressAbsolute(&cycles)
 
             cpu.Memory.WriteByte(&cycles, cpu.A, targetAddress)
 
@@ -548,14 +449,13 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // would be $8000
 
             // Fetch the Zero Page Address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
 
-            // Wrap Around
-            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
+            zeroPageAddress += uint16(cpu.X)
             cycles--
 
             // The effective address is the 
-            effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
+            effectiveAddress := cpu.ReadWord(&cycles, zeroPageAddress)
 
             cpu.Memory.WriteByte(&cycles, cpu.A, effectiveAddress)
 
@@ -565,12 +465,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_STA_INDY:
 
             // Fetch the Zero Page Address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
 
-            effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
+            effectiveAddress := cpu.ReadWord(&cycles, zeroPageAddress)
 
             // Add Y to the Zero Page Address
-            AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, &cycles)
+            // AddRegValueToTarget16Address() not used because totale cycles amount to 5, 
+            // independently from page crossing.
+            effectiveAddress += uint16(cpu.Y)
+            cycles--
 
             cpu.Memory.WriteByte(&cycles, cpu.A, effectiveAddress)
 
@@ -783,3 +686,75 @@ func AddRegValueToTarget16Address(value byte, address *uint16, cycles *int){
         *cycles--
     }
 }
+
+func LoadRegisterAndSetStatusFlags(cpu *CPU, cycles *int, address uint16, register *byte){
+
+            // Load the data at the zeroPageAddress in the A register
+            *register = cpu.ReadByte(cycles, address)
+
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, *register)
+}
+
+func StoreRegistersIntoMemoryAddress(cpu *CPU, cycles *int, address uint16, register *byte){
+
+            cpu.Memory.WriteByte(cycles, *register, address)
+}
+
+// Fetches ZeroPage Address when in Addressing Mode - Zero Page 
+func (cpu *CPU) AddressZeroPage(cycles *int) uint16{
+
+    return uint16(cpu.FetchByte(cycles))
+}
+
+// Fetches ZeroPage Address when in Addressing Mode - Zero Page with X offset
+func (cpu *CPU) AddressZeroPageX(cycles *int) uint16{
+
+            zeroPageAddress := cpu.FetchByte(cycles)
+
+            // Wrap Around
+            zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
+            *cycles--
+            return uint16(zeroPageAddress)
+}
+
+// Fetches ZeroPage Address when in Addressing Mode - Zero Page with Y offset
+func (cpu *CPU) AddressZeroPageY(cycles *int) uint16{
+
+            zeroPageAddress := cpu.FetchByte(cycles)
+
+            // Wrap Around
+            zeroPageAddress = byte(uint16(cpu.Y + zeroPageAddress) % 0x100)
+            *cycles--
+
+            return uint16(zeroPageAddress)
+}
+
+// Fetches Absolute Address when in Addressing Mode - Absolute
+func (cpu *CPU) AddressAbsolute(cycles *int) uint16{
+
+            return uint16(cpu.FetchWord(cycles))
+}
+
+// Fetches Absolute Address when in Addressing Mode - Absolute with X offset
+func (cpu *CPU) AddressAbsoluteX(cycles *int) uint16{
+
+            targetAddress := uint16(cpu.FetchWord(cycles))
+
+            // Add X value to the fetched address
+            AddRegValueToTarget16Address(cpu.X, &targetAddress, cycles)
+
+            return targetAddress
+}
+
+// Fetches Absolute Address when in Addressing Mode - Absolute with Y offset
+func (cpu *CPU) AddressAbsoluteY(cycles *int) uint16{
+
+            targetAddress := uint16(cpu.FetchWord(cycles))
+
+            // Add Y value to the fetched address
+            AddRegValueToTarget16Address(cpu.Y, &targetAddress, cycles)
+
+            return targetAddress
+}
+

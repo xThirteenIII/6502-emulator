@@ -88,7 +88,7 @@ func TestSTAIndirectXCanLoadIntoARegister(t *testing.T){
     }
 }
 
-// Test if the LDA_INDY instruction loads a value succefully into the A register
+// Test if the STA_INDY instruction loads a value succefully into the A register
 func TestSTAIndirectYCanLoadIntoARegister(t *testing.T){
 
     cpu := &CPU{}
@@ -105,11 +105,11 @@ func TestSTAIndirectYCanLoadIntoARegister(t *testing.T){
     cpu.Memory.Data[0x0003] = 0x80
     // end - inline program
 
-    expectedCycles := 5
+    expectedCycles := 6
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
     if cpu.Memory.Data[0x8004] != cpu.A {
