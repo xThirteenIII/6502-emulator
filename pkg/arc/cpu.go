@@ -259,7 +259,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
         case instructions.INS_LDA_INDX:
 
-            // In this mode the X register is used to offste the zero page vector,
+            // In this mode the X register is used to offset the zero page vector,
             // used to determine the effective address.
             // Put another way, the vector is chosen by adding the value in the X register,
             // to the given zero page address.
@@ -306,7 +306,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
 
-            // Add X to the Zero Page Address
+            // Add Y to the Zero Page Address
             AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, &cycles)
 
             cpu.A = cpu.ReadByte(&cycles, effectiveAddress)
@@ -407,10 +407,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             AddRegValueToTarget16Address(cpu.Y, &targetAddress, &cycles)
 
 
-            // Load value stored at the address+X into the A register
-            cpu.Y = cpu.ReadByte(&cycles, targetAddress)
+            // Load value stored at the address+X into the X register
+            cpu.X = cpu.ReadByte(&cycles, targetAddress)
 
-            // Set LDA status flags
+            // Set LDX status flags
             SetZeroAndNegativeFlags(cpu, cpu.X)
 
             // Total cycles: 4(+1 if page crossed)
