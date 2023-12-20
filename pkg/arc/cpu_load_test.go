@@ -952,21 +952,21 @@ func CheckUnmodifiedLDAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
     }
 
     if cpu.PS.I != cpuCopy.PS.I {
-        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+        t.Error("PS.I: want: ", cpuCopy.PS.I, ", got: ", cpu.PS.I)
     }
 
     if cpu.PS.U != cpuCopy.PS.U {
-        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+        t.Error("PS.U: want: ", cpuCopy.PS.U, ", got: ", cpu.PS.U)
     }
 
     if cpu.PS.B != cpuCopy.PS.B {
-        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+        t.Error("PS.B: want: ", cpuCopy.PS.B, ", got: ", cpu.PS.B)
     }
 
     if cpu.PS.D != cpuCopy.PS.D {
-        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+        t.Error("PS.D: want: ", cpuCopy.PS.D, ", got: ", cpu.PS.D)
     }
     if cpu.PS.V != cpuCopy.PS.V {
-        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+        t.Error("PS.V: want: ", cpuCopy.PS.V, ", got: ", cpu.PS.V)
     }
 }
