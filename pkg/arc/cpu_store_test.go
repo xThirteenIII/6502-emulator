@@ -122,6 +122,8 @@ func CheckStoreRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing
     cpu.Memory.Data[0xFFFC] = byte(opcode)
     cpu.Memory.Data[0xFFFD] = 0x44
 
+    cpuCopy := *cpu
+
     expectedCycles := 3
     cyclesUsed := cpu.Execute(expectedCycles)
 
@@ -132,6 +134,8 @@ func CheckStoreRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing
     if cpu.Memory.Data[0x0044] != *register {
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x0044])
     }
+
+    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -139,6 +143,8 @@ func CheckStoreRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testin
     cpu.X = 0x02
     cpu.Memory.Data[0xFFFC] = byte(opcode)
     cpu.Memory.Data[0xFFFD] = 0x44
+
+    cpuCopy := *cpu
 
     expectedCycles := 4
     cyclesUsed := cpu.Execute(expectedCycles)
@@ -150,6 +156,8 @@ func CheckStoreRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testin
     if cpu.Memory.Data[0x0046] != *register {
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x0044])
     }
+
+    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -157,6 +165,8 @@ func CheckStoreRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing
     cpu.Memory.Data[0xFFFC] = byte(opcode)
     cpu.Memory.Data[0xFFFD] = 0x44
     cpu.Memory.Data[0xFFFE] = 0x80
+
+    cpuCopy := *cpu
 
     expectedCycles := 4
     cyclesUsed := cpu.Execute(expectedCycles)
@@ -168,6 +178,8 @@ func CheckStoreRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing
     if cpu.Memory.Data[0x8044] != *register {
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8044])
     }
+
+    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
     
 }
 
@@ -178,6 +190,8 @@ func CheckStoreRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testin
     cpu.Memory.Data[0xFFFD] = 0x44
     cpu.Memory.Data[0xFFFE] = 0x80
 
+    cpuCopy := *cpu
+
     expectedCycles := 5
     cyclesUsed := cpu.Execute(expectedCycles)
 
@@ -189,6 +203,7 @@ func CheckStoreRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testin
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8046])
     }
     
+    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -197,6 +212,7 @@ func CheckStoreRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testin
     cpu.Memory.Data[0xFFFC] = byte(opcode)
     cpu.Memory.Data[0xFFFD] = 0x44
     cpu.Memory.Data[0xFFFE] = 0x80
+    cpuCopy := *cpu
 
     expectedCycles := 5
     cyclesUsed := cpu.Execute(expectedCycles)
@@ -209,4 +225,40 @@ func CheckStoreRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testin
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8046])
     }
     
+    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+}
+
+// Confront Initial PS Registers values with values after execution.
+// These register shuould remain unmodified
+func CheckUnmodifiedSTAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
+
+    // Confront uneffected flags
+    if cpu.PS.C != cpuCopy.PS.C {
+        t.Error("PS.C: want: ", cpuCopy.PS.C, ", got: ", cpu.PS.C)
+    }
+
+    if cpu.PS.I != cpuCopy.PS.I {
+        t.Error("PS.I: want: ", cpuCopy.PS.I, ", got: ", cpu.PS.I)
+    }
+
+    if cpu.PS.U != cpuCopy.PS.U {
+        t.Error("PS.U: want: ", cpuCopy.PS.U, ", got: ", cpu.PS.U)
+    }
+
+    if cpu.PS.B != cpuCopy.PS.B {
+        t.Error("PS.B: want: ", cpuCopy.PS.B, ", got: ", cpu.PS.B)
+    }
+
+    if cpu.PS.D != cpuCopy.PS.D {
+        t.Error("PS.D: want: ", cpuCopy.PS.D, ", got: ", cpu.PS.D)
+    }
+    if cpu.PS.V != cpuCopy.PS.V {
+        t.Error("PS.V: want: ", cpuCopy.PS.V, ", got: ", cpu.PS.V)
+    }
+    if cpu.PS.N != cpuCopy.PS.N {
+        t.Error("PS.N: want: ", cpuCopy.PS.N, ", got: ", cpu.PS.N)
+    }
+    if cpu.PS.Z != cpuCopy.PS.Z {
+        t.Error("PS.Z: want: ", cpuCopy.PS.Z, ", got: ", cpu.PS.Z)
+    }
 }
