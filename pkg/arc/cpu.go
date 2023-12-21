@@ -367,7 +367,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             zeroPageAddress := cpu.AddressZeroPage(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, zeroPageAddress)
+            cpu.WriteByte(&cycles, cpu.A, zeroPageAddress)
             
             // Total cycles: 3
             // Total bytes: 2
@@ -377,7 +377,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             zeroPageAddress := cpu.AddressZeroPageX(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, zeroPageAddress)
+            cpu.WriteByte(&cycles, cpu.A, zeroPageAddress)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -389,7 +389,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Fetch the target location using a full 16 bit address
             targetAddress := cpu.AddressAbsolute(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, targetAddress)
+            cpu.WriteByte(&cycles, cpu.A, targetAddress)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -406,7 +406,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             targetAddress += uint16(cpu.X)
             cycles--
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, targetAddress)
+            cpu.WriteByte(&cycles, cpu.A, targetAddress)
 
             // Total cycles: 5
             // Total bytes: 3
@@ -423,7 +423,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             targetAddress += uint16(cpu.Y)
             cycles--
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, targetAddress)
+            cpu.WriteByte(&cycles, cpu.A, targetAddress)
 
             // Total cycles: 5
             // Total bytes: 3
@@ -457,7 +457,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // The effective address is the 
             effectiveAddress := cpu.ReadWord(&cycles, zeroPageAddress)
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, effectiveAddress)
+            cpu.WriteByte(&cycles, cpu.A, effectiveAddress)
 
             // Total cycles: 6
             // Total bytes: 2
@@ -475,7 +475,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             effectiveAddress += uint16(cpu.Y)
             cycles--
 
-            cpu.Memory.WriteByte(&cycles, cpu.A, effectiveAddress)
+            cpu.WriteByte(&cycles, cpu.A, effectiveAddress)
 
             // Total cycles: 6
             // Total bytes: 2
@@ -485,7 +485,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             zeroPageAddress := cpu.FetchByte(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.X, uint16(zeroPageAddress))
+            cpu.WriteByte(&cycles, cpu.X, uint16(zeroPageAddress))
             
             // Total cycles: 3
             // Total bytes: 2
@@ -500,7 +500,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             zeroPageAddress = byte(uint16(cpu.Y + zeroPageAddress) % 0x100)
             cycles--
 
-            cpu.Memory.WriteByte(&cycles, cpu.X, uint16(zeroPageAddress))
+            cpu.WriteByte(&cycles, cpu.X, uint16(zeroPageAddress))
 
             // Total cycles: 4
             // Total bytes: 2
@@ -512,7 +512,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Fetch the target location using a full 16 bit address
             targetAddress := cpu.FetchWord(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.X, targetAddress)
+            cpu.WriteByte(&cycles, cpu.X, targetAddress)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -522,7 +522,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             zeroPageAddress := cpu.FetchByte(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.Y, uint16(zeroPageAddress))
+            cpu.WriteByte(&cycles, cpu.Y, uint16(zeroPageAddress))
             
             // Total cycles: 3
             // Total bytes: 2
@@ -537,7 +537,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             zeroPageAddress = byte(uint16(cpu.X + zeroPageAddress) % 0x100)
             cycles--
 
-            cpu.Memory.WriteByte(&cycles, cpu.Y, uint16(zeroPageAddress))
+            cpu.WriteByte(&cycles, cpu.Y, uint16(zeroPageAddress))
 
             // Total cycles: 4
             // Total bytes: 2
@@ -549,7 +549,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Fetch the target location using a full 16 bit address
             targetAddress := cpu.FetchWord(&cycles)
 
-            cpu.Memory.WriteByte(&cycles, cpu.Y, targetAddress)
+            cpu.WriteByte(&cycles, cpu.Y, targetAddress)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -621,7 +621,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             SP := uint16(cpu.SP) + 0x0100
 
             // PC - 1 is the return address, where we return after the subRoutine exec
-            cpu.Memory.WriteWord(&cycles, SP, cpu.PC-1)
+            cpu.WriteWord(&cycles, SP, cpu.PC-1)
             cpu.SP++
 
             cpu.PC = targetAddress
@@ -698,7 +698,7 @@ func LoadRegisterAndSetStatusFlags(cpu *CPU, cycles *int, address uint16, regist
 
 func StoreRegistersIntoMemoryAddress(cpu *CPU, cycles *int, address uint16, register *byte){
 
-            cpu.Memory.WriteByte(cycles, *register, address)
+            cpu.WriteByte(cycles, *register, address)
 }
 
 // Fetches ZeroPage Address when in Addressing Mode - Zero Page 

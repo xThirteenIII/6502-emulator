@@ -2,28 +2,28 @@ package arc
 
 import "log"
 
-func (memory *Memory) WriteByte(cycles *int, b byte ,address uint16){
+func (cpu *CPU) WriteByte(cycles *int, b byte ,address uint16){
     
     if address > MaxMem-1 {
         log.Fatalf("Program Counter exceeded max memory")
     }
-    memory.Data[address] = b
+    cpu.Memory.Data[address] = b
     *cycles--
 }
 
-func (memory *Memory) WriteWord(cycles *int, word ,address uint16){
+func (cpu *CPU) WriteWord(cycles *int, word ,address uint16){
 
     if address > MaxMem-1 {
         log.Fatalf("Program Counter exceeded max memory")
     }
 
     // Little endian: we store LSB first
-    memory.Data[address] = byte(word & 0xFF)
+    cpu.Memory.Data[address] = byte(word & 0xFF)
     *cycles--
 
 
     // Store MSB
-    memory.Data[address+1] = byte(word >> 8)
+    cpu.Memory.Data[address+1] = byte(word >> 8)
     *cycles--
 
 }
