@@ -73,7 +73,7 @@ type CPU struct {
     Memory Memory
 }
 
-func (cpu *CPU) Reset(){
+func (cpu *CPU) Reset(resetVector uint16){
 
     // Reset procedure does not follow accurate Commodor 64, it acts like a computer that's like a 
     // Commodor 64.
@@ -91,8 +91,10 @@ func (cpu *CPU) Reset(){
     cpu.PS.V = 0
     cpu.PS.N = 0
 
-    // The first stack access happens at address $0100 – a push first stores the value at $0100 + SP, then decrements SP.
-    cpu.SP = 0x00
+    // After the Reset, there's 9 post-reset cycles, which execute three fake push into the stack.
+    // The final SP is therefore 00 - 1 = FF, FF - 1 = FE, FF - 1 = FD
+    // https://www.c64-wiki.com/wiki/Reset_(Process)
+    cpu.SP = 0xFD
 
     // Not sure if we want this to happen for now.
     cpu.A = 0
@@ -129,6 +131,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
 
         // Fetch instruction, takes up one clock cycle
+        // PC++
         ins := cpu.FetchByte(&cycles)
         
         // Decode instruction
@@ -615,16 +618,19 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
         case instructions.INS_JSR_ABS:
 
+            // Example:
+            // I read opcode at FF00. PC is now FF01
+            // targetAddress := cpu.FetchWord(&cycles)
+            // I read 00 at FF01 and 80 at FF02. PC is now FF03
+            // I store PC - 1 = FF02 in the SP which is FD
+            // Which means 02 at 01FD and FF at 01FC
+            // PC is 8000 
+
             // Fetch the targetMemoryAddress, which is where we have to jump to
             targetAddress := cpu.FetchWord(&cycles)
 
-            // Set cpu.SP 16-bit, which is 0100 + cpu.SP (8 bit)
-
-            SP := uint16(cpu.SP) + 0x0100
-
-            // PC - 1 is the return address, where we return after the subRoutine exec
-            cpu.WriteWord(&cycles, SP, cpu.PC-1)
-            cpu.SP++
+            // This takes 2 cycles
+            cpu.PushWordToStack(&cycles, cpu.PC-1)
 
             cpu.PC = targetAddress
             cycles--
@@ -632,6 +638,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 6
             // Total bytes: 3
 
+            break;
+
+        case instructions.INS_RTS_IMP:
+            cpu.PC = cpu.PopWordFromStack(&cycles)
             break;
 
         default:
@@ -760,3 +770,27 @@ func (cpu *CPU) AddressAbsoluteY(cycles *int) uint16{
             return targetAddress
 }
 
+func (cpu *CPU) PushByteToStack(cycles *int, data byte) {
+    cpu.WriteByteToStack(cycles, data)
+}
+
+func (cpu *CPU) PushWordToStack(cycles *int, data uint16) {
+    cpu.WriteWordToStack(cycles, data)
+}
+
+func (cpu *CPU) PopByteFromStack(cycles *int) (data byte){
+
+    data = cpu.ReadByteFromStack(cycles)
+    return
+}
+
+func (cpu *CPU) PopWordFromStack(cycles *int) (data uint16){
+
+    data = cpu.ReadWordFromStack(cycles)
+    return
+}
+
+func (cpu *CPU) SPTo16Address(sp byte) (SP uint16){
+    SP = uint16(sp) + 0x0100
+    return
+}

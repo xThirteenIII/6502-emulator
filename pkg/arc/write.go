@@ -29,3 +29,25 @@ func (cpu *CPU) WriteWord(cycles *int, word ,address uint16){
     *cycles--
 
 }
+
+// Write one byte to memory
+func (cpu *CPU) WriteByteToStack(cycles *int, b byte){
+    
+    cpu.Memory.Data[cpu.SPTo16Address(cpu.SP)] = b
+    cpu.SP--
+    *cycles--
+}
+
+// TODO: for now we write MSB first and then LSB.
+// That follows 6502 little endian architecture. Don't know if it's correct.
+func (cpu *CPU) WriteWordToStack(cycles *int, word uint16){
+
+    // Store MSB
+    cpu.Memory.Data[cpu.SPTo16Address(cpu.SP)] = byte(word >> 8)
+    cpu.SP--
+    *cycles--
+
+    cpu.Memory.Data[cpu.SPTo16Address(cpu.SP)] = byte(word & 0xFF)
+    *cycles--
+    cpu.SP--
+}
