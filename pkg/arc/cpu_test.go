@@ -92,7 +92,7 @@ func TestSPIsReturnedAs16BitAddressCorrectly(t *testing.T){
     }
 }
 
-func TestReadByteFromStack(t *testing.T){
+func TestPopByteFromStack(t *testing.T){
 
     cpu := Init6502()
 
@@ -100,10 +100,10 @@ func TestReadByteFromStack(t *testing.T){
     cpu.SP--
 
     expectedCycles := 1
-    data := cpu.ReadByteFromStack(&expectedCycles)
+    data := cpu.PopByteFromStack(&expectedCycles)
 
     if cpu.SP != 0xFD {
-        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFD")
+        t.Error("SP not incremented correctly, got: ", cpu.SP, "but want: 0xFD")
     }
     if data != 0x32 {
         t.Error ("Expected 0x32 but got: ", data)
@@ -112,7 +112,7 @@ func TestReadByteFromStack(t *testing.T){
 
 }
 
-func TestReadWordFromStack(t *testing.T){
+func TestPopWordFromStack(t *testing.T){
 
     cpu := Init6502()
 
@@ -122,14 +122,48 @@ func TestReadWordFromStack(t *testing.T){
     cpu.SP -=2
 
     expectedCycles := 2
-    data := cpu.ReadWordFromStack(&expectedCycles)
+    data := cpu.PopWordFromStack(&expectedCycles)
 
     if cpu.SP != 0xFD {
-        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFD")
+        t.Error("SP not incremented correctly, got: ", cpu.SP, "but want: 0xFD")
     }
 
     if data != 0x4432 {
         t.Error ("Expected 0x4432 but got: ", data)
     }
 
+}
+
+func TestPushByteToStack(t *testing.T){
+
+    cpu := Init6502()
+
+    // MSB first since it's higher memory address
+    expectedCycles := 1
+    cpu.PushByteToStack(&expectedCycles, 0x3F)
+
+    if cpu.SP != 0xFC {
+        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFC")
+    }
+
+    if cpu.Memory.Data[0x01FD] != 0x3F{
+        t.Error ("Expected 0x3F but got: ", cpu.Memory.Data[0x01FD])
+    }
+}
+
+func TestPushWordToStack(t *testing.T){
+
+    cpu := Init6502()
+
+    // MSB first since it's higher memory address
+    expectedCycles := 1
+    cpu.PushWordToStack(&expectedCycles, 0x333F)
+
+    if cpu.SP != 0xFB {
+        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFB")
+    }
+
+    if cpu.Memory.Data[0x01FD] != 0x33 || cpu.Memory.Data[0x01FC] != 0x3F {
+        t.Error("Pushed: ", uint16(cpu.Memory.Data[0x01FC]) | (uint16(cpu.Memory.Data[0x01FD]) << 8), "but want: 333F")
+    }
 }
