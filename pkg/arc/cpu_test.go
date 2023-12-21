@@ -8,9 +8,7 @@ import (
 // Test if CPU register reset to default values correctly and memory initialises to 0.
 func TestCPUResetsCorrectly(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     want := &CPU{
         PC: 0xFFFC,
@@ -43,9 +41,7 @@ func TestCPUDoesNothingWhenWeExecuteZeroCycles(t *testing.T){
 
     // given
     const NUM_CYCLES = 0
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     // when 
     cyclesUsed := cpu.Execute(0)
@@ -61,9 +57,7 @@ func TestCPUDoesNothingWhenWeExecuteZeroCycles(t *testing.T){
 func TestCPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstruction(t *testing.T){
 
     // given
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     cpu.Memory.Data[0xFFFC] = instructions.INS_LDA_IM
     cpu.Memory.Data[0xFFFD] = 0x84
@@ -79,4 +73,12 @@ func TestCPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstruction(t *testing.
     if cyclesUsed != 2 {
         t.Error("Couldn't run at least 1 cycle")
     }
+}
+
+func Init6502() (cpu *CPU){
+    cpu = &CPU{}
+    cpu.Memory = Memory{}
+    cpu.Reset()
+
+    return
 }

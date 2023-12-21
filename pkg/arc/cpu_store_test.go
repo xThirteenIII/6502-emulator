@@ -7,9 +7,7 @@ import (
 
 func TestSTAStoresValueIntoTargetAddress(t *testing.T){
     
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.A = 0x09
 
     CheckStoreRegisterZeroPage(cpu, instructions.INS_STA_ZP, &cpu.A, t)
@@ -18,9 +16,7 @@ func TestSTAStoresValueIntoTargetAddress(t *testing.T){
 
 func TestSTAZeroPageXStoresValueIntoTargetAddress(t *testing.T){
     
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.A = 0x09
 
     CheckStoreRegisterZeroPageX(cpu, instructions.INS_STA_ZPX, &cpu.A, t)
@@ -29,9 +25,7 @@ func TestSTAZeroPageXStoresValueIntoTargetAddress(t *testing.T){
 
 func TestSTAAbsoluteStoresValueIntoTargetAddress(t *testing.T){
     
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.A = 0x09
 
     CheckStoreRegisterAbsolute(cpu, instructions.INS_STA_ABS, &cpu.A, t)
@@ -40,9 +34,7 @@ func TestSTAAbsoluteStoresValueIntoTargetAddress(t *testing.T){
 
 func TestSTAAbsoluteXStoresValueIntoTargetAddress(t *testing.T){
     
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.A = 0x09
 
     CheckStoreRegisterAbsoluteX(cpu, instructions.INS_STA_ABSX, &cpu.A, t)
@@ -51,9 +43,7 @@ func TestSTAAbsoluteXStoresValueIntoTargetAddress(t *testing.T){
 
 func TestSTAAbsoluteYStoresValueIntoTargetAddress(t *testing.T){
     
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.A = 0x09
 
     CheckStoreRegisterAbsoluteY(cpu, instructions.INS_STA_ABSY, &cpu.A, t)
@@ -62,9 +52,7 @@ func TestSTAAbsoluteYStoresValueIntoTargetAddress(t *testing.T){
 
 func TestSTAIndirectXCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     // given
     cpu.X = 0x04
@@ -91,9 +79,7 @@ func TestSTAIndirectXCanLoadIntoARegister(t *testing.T){
 // Test if the STA_INDY instruction loads a value succefully into the A register
 func TestSTAIndirectYCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     // given
     cpu.Y = 0x04

@@ -8,9 +8,7 @@ import (
 // Test if the LDA instruction loads a value succefully into the A register
 func TestLDAImmCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterImmediate(cpu, instructions.INS_LDA_IM, &cpu.A,  t)
 }
@@ -20,9 +18,8 @@ func TestLDAImmCanLoadZeroIntoARegister(t *testing.T){
 
     want := byte(0x0)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
+
     cpu.PS.Z = 0
     cpu.PS.N = 1
 
@@ -68,9 +65,7 @@ func TestLDAImmCanLoadZeroIntoARegister(t *testing.T){
 // Test if the LDA_ZP instruction loads a value succefully into the A register
 func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPage(cpu, instructions.INS_LDA_ZP, &cpu.A, t)
 }
@@ -78,9 +73,7 @@ func TestLDAZeroPageCanLoadIntoARegister(t *testing.T){
 // Test if the LDA_ZPX instruction loads a value succefully into the A register
 func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDA_ZPX, &cpu.A, t)
 }
@@ -88,9 +81,7 @@ func TestLDAZeroXPageCanLoadIntoARegister(t *testing.T){
 // Test if the LDA_ABS instruction loads a value succefully into the A register
 func TestLDAAbsoluteCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsolute(cpu, instructions.INS_LDA_ABS, &cpu.A, t)
 }
@@ -98,18 +89,14 @@ func TestLDAAbsoluteCanLoadIntoARegister(t *testing.T){
 // Test if the LDA_ZPX instruction loads a value succefully into the A register
 func TestLDAAbsoluteXCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteX(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 }
 
 func TestLDAAsboluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteXWithPageCrossing(cpu, instructions.INS_LDA_ABSX, &cpu.A, t)
 
@@ -118,18 +105,14 @@ func TestLDAAsboluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
 // Test if the LDA_ABSY instruction loads a value succefully into the A register
 func TestLDAAbsoluteYCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteY(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 }
 
 func TestLDAAsboluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteYWithPageCrossing(cpu, instructions.INS_LDA_ABSY, &cpu.A, t)
 
@@ -148,9 +131,7 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x72)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     cpuCopy := *cpu
 
@@ -198,9 +179,7 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
 
     want := byte(0x72)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.PS.Z = 1
     cpu.PS.N = 1
 
@@ -251,9 +230,7 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
 
     want := byte(0x72)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.PS.Z = 1
     cpu.PS.N = 1
 
@@ -303,9 +280,7 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
 // Test if the LDX instruction loads a value succefully into the X register
 func TestLDXImmCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterImmediate(cpu, instructions.INS_LDX_IM, &cpu.X,  t)
 }
@@ -315,9 +290,7 @@ func TestLDXImmCanLoadZeroIntoXRegister(t *testing.T){
 
     want := byte(0x0)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     // Make sure flags registers are changed when executing to correct values
     cpu.PS.Z = 0
     cpu.PS.N = 1
@@ -364,9 +337,7 @@ func TestLDXImmCanLoadZeroIntoXRegister(t *testing.T){
 // Test if the LDX_ZP instruction loads a value succefully into the X register
 func TestLDXZeroPageCanLoadIntoXRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPage(cpu, instructions.INS_LDX_ZP, &cpu.X, t)
 }
@@ -374,9 +345,7 @@ func TestLDXZeroPageCanLoadIntoXRegister(t *testing.T){
 // Test if the LDX_ZPY instruction loads a value succefully into the X register
 func TestLDXZeroPageYCanLoadIntoXRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPageY(cpu, instructions.INS_LDX_ZPY, &cpu.X, t)
 }
@@ -384,9 +353,7 @@ func TestLDXZeroPageYCanLoadIntoXRegister(t *testing.T){
 // Test if the LDX_ABS instruction loads a value succefully into the X register
 func TestLDXAbsoluteCanLoadIntoXRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsolute(cpu, instructions.INS_LDX_ABS, &cpu.X, t)
 }
@@ -394,9 +361,7 @@ func TestLDXAbsoluteCanLoadIntoXRegister(t *testing.T){
 // Test if the LDX_ABSY instruction loads a value succefully into the X register
 func TestLDXAbsoluteYCanLoadIntoXRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteY(cpu, instructions.INS_LDX_ABSY, &cpu.X, t)
 }
@@ -404,9 +369,7 @@ func TestLDXAbsoluteYCanLoadIntoXRegister(t *testing.T){
 // Test if the LDX_ABSY instruction loads a value succefully into the X register
 func TestLDXAbsoluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteYWithPageCrossing(cpu, instructions.INS_LDX_ABSY, &cpu.X, t)
 }
@@ -414,9 +377,7 @@ func TestLDXAbsoluteYTakesAnExtraCycleWithPageCrossing(t *testing.T){
 // Test if the LDY instruction loads a value succefully into the Y register
 func TestLDYImmCanLoadIntoARegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterImmediate(cpu, instructions.INS_LDY_IM, &cpu.Y,  t)
 }
@@ -426,9 +387,7 @@ func TestLDYImmCanLoadZeroIntoYRegister(t *testing.T){
 
     want := byte(0x0)
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
     cpu.PS.Z = 0
     cpu.PS.N = 1
 
@@ -474,9 +433,7 @@ func TestLDYImmCanLoadZeroIntoYRegister(t *testing.T){
 // Test if the LDY_ZP instruction loads a value succefully into the Y register
 func TestLDYZeroPageCanLoadIntoYRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPage(cpu, instructions.INS_LDY_ZP, &cpu.Y, t)
 }
@@ -484,9 +441,7 @@ func TestLDYZeroPageCanLoadIntoYRegister(t *testing.T){
 // Test if the LDY_ZPX instruction loads a value succefully into the Y register
 func TestLDYZeroPageXCanLoadIntoYRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterZeroPageX(cpu, instructions.INS_LDY_ZPX, &cpu.Y, t)
 }
@@ -494,9 +449,7 @@ func TestLDYZeroPageXCanLoadIntoYRegister(t *testing.T){
 // Test if the LDY_ABS instruction loads a value succefully into the Y register
 func TestLDYAbsoluteCanLoadIntoYRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsolute(cpu, instructions.INS_LDY_ABS, &cpu.Y, t)
 }
@@ -504,9 +457,7 @@ func TestLDYAbsoluteCanLoadIntoYRegister(t *testing.T){
 // Test if the LDY_ABSX instruction loads a value succefully into the Y register
 func TestLDYAbsoluteXCanLoadIntoYRegister(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteX(cpu, instructions.INS_LDY_ABSX, &cpu.Y, t)
 }
@@ -514,9 +465,7 @@ func TestLDYAbsoluteXCanLoadIntoYRegister(t *testing.T){
 // Test if the LDY_ABSX instruction loads a value succefully into the Y register
 func TestLDYAbsoluteXTakesAnExtraCycleWithPageCrossing(t *testing.T){
 
-    cpu := &CPU{}
-    cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu := Init6502()
 
     CheckLoadRegisterAbsoluteXWithPageCrossing(cpu, instructions.INS_LDY_ABSX, &cpu.Y, t)
 }

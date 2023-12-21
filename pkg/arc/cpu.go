@@ -397,6 +397,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_STA_ABSX:
 
+            // Why does this take 5 cycles flat? Weird
+
             // Fetch the target location using a full 16 bit address
             targetAddress := cpu.FetchWord(&cycles)
 
@@ -470,7 +472,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             effectiveAddress := cpu.ReadWord(&cycles, zeroPageAddress)
 
             // Add Y to the Zero Page Address
-            // AddRegValueToTarget16Address() not used because totale cycles amount to 5, 
+            // AddRegValueToTarget16Address() not used because totale cycles amount to 6, 
             // independently from page crossing.
             effectiveAddress += uint16(cpu.Y)
             cycles--
@@ -611,7 +613,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 2
             // Total bytes: 1
             break;
-        case instructions.INS_JSR:
+        case instructions.INS_JSR_ABS:
 
             // Fetch the targetMemoryAddress, which is where we have to jump to
             targetAddress := cpu.FetchWord(&cycles)

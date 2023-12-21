@@ -2,6 +2,7 @@ package arc
 
 import "log"
 
+// Write one byte to memory
 func (cpu *CPU) WriteByte(cycles *int, b byte ,address uint16){
     
     if address > MaxMem-1 {
@@ -11,6 +12,7 @@ func (cpu *CPU) WriteByte(cycles *int, b byte ,address uint16){
     *cycles--
 }
 
+// Write two bytes to memory
 func (cpu *CPU) WriteWord(cycles *int, word ,address uint16){
 
     if address > MaxMem-1 {
