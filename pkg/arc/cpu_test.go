@@ -12,7 +12,7 @@ func TestCPUResetsCorrectly(t *testing.T){
 
     want := &CPU{
         PC: 0xFFFC,
-        SP: 0x00,
+        SP: 0xFD,
         A: 0,
         X: 0,
         Y: 0,
@@ -33,7 +33,7 @@ func TestCPUResetsCorrectly(t *testing.T){
 
     if *cpu != *want {
         
-        t.Error("Want: ", want, ", got: ", cpu)
+        t.Error("CPU not reset correctly")
     }
 }
 
@@ -78,7 +78,58 @@ func TestCPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstruction(t *testing.
 func Init6502() (cpu *CPU){
     cpu = &CPU{}
     cpu.Memory = Memory{}
-    cpu.Reset()
+    cpu.Reset(0xFFFC)
 
     return
+}
+
+func TestSPIsReturnedAs16BitAddressCorrectly(t *testing.T){
+    cpu := Init6502()
+    SP := cpu.SPTo16Address(cpu.SP)
+
+    if SP != 0x01FD {
+        t.Error("SP should be 0x01FD but got: ", SP)
+    }
+}
+
+func TestReadByteFromStack(t *testing.T){
+
+    cpu := Init6502()
+
+    cpu.Memory.Data[0x01FD] = 0x32
+    cpu.SP--
+
+    expectedCycles := 1
+    data := cpu.ReadByteFromStack(&expectedCycles)
+
+    if cpu.SP != 0xFD {
+        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFD")
+    }
+    if data != 0x32 {
+        t.Error ("Expected 0x32 but got: ", data)
+    }
+
+
+}
+
+func TestReadWordFromStack(t *testing.T){
+
+    cpu := Init6502()
+
+    // MSB first since it's higher memory address
+    cpu.Memory.Data[0x01FD] = 0x44
+    cpu.Memory.Data[0x01FC] = 0x32
+    cpu.SP -=2
+
+    expectedCycles := 2
+    data := cpu.ReadWordFromStack(&expectedCycles)
+
+    if cpu.SP != 0xFD {
+        t.Error("SP not decremented correctly, got: ", cpu.SP, "but want: 0xFD")
+    }
+
+    if data != 0x4432 {
+        t.Error ("Expected 0x4432 but got: ", data)
+    }
+
 }
