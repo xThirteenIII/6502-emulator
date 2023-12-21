@@ -37,7 +37,7 @@ func TestLDAImmCanLoadZeroIntoARegister(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
-        t.Error("Cycles used: ", cyclesUsed, ", instead got: ", expectedCycles)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
     gotA := cpu.A
@@ -150,7 +150,7 @@ func TestLDAIndirectXCanLoadIntoARegister(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
 
@@ -200,7 +200,7 @@ func TestLDAIndirectYCanLoadIntoARegister(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
 
@@ -251,7 +251,7 @@ func TestLDAIndirectYCanLoadIntoARegisterWithPageCrossing(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if cyclesUsed != expectedCycles {
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
 
@@ -309,7 +309,7 @@ func TestLDXImmCanLoadZeroIntoXRegister(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
     gotX := cpu.X
@@ -405,7 +405,7 @@ func TestLDYImmCanLoadZeroIntoYRegister(t *testing.T){
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
-        t.Error("Cycles used: ", expectedCycles, ", instead got: ", cyclesUsed)
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
     gotY := cpu.Y

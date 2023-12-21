@@ -121,7 +121,7 @@ func CheckStoreRegisterZeroPage(cpu *CPU, opcode int, register *byte, t *testing
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x0044])
     }
 
-    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -143,7 +143,7 @@ func CheckStoreRegisterZeroPageX(cpu *CPU, opcode int, register *byte, t *testin
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x0044])
     }
 
-    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -165,7 +165,7 @@ func CheckStoreRegisterAbsolute(cpu *CPU, opcode int, register *byte, t *testing
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8044])
     }
 
-    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
     
 }
 
@@ -189,7 +189,7 @@ func CheckStoreRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testin
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8046])
     }
     
-    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
 }
 
 func CheckStoreRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testing.T){
@@ -211,12 +211,12 @@ func CheckStoreRegisterAbsoluteY(cpu *CPU, opcode int, register *byte, t *testin
         t.Error("Expected ", *register, "but got: ", cpu.Memory.Data[0x8046])
     }
     
-    CheckUnmodifiedSTAFlags(cpuCopy, cpu, t)
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
 }
 
 // Confront Initial PS Registers values with values after execution.
 // These register shuould remain unmodified
-func CheckUnmodifiedSTAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
+func CheckUnmodifiedlagsALL(cpuCopy CPU, cpu *CPU, t *testing.T){
 
     // Confront uneffected flags
     if cpu.PS.C != cpuCopy.PS.C {
