@@ -23,9 +23,6 @@ func (cpu *CPU) FetchByte( cycles *int) byte{
 
 func (cpu *CPU) FetchWord( cycles *int) uint16{
 
-    // TODO: Check if PC exceeds MAX_MEM
-    // TODO: Handle error
-    // TODO:Check if PC exceeds MAX_MEM
     if cpu.PC > MaxMem-1 {
         log.Fatalf("Program Counter exceeded max memory")
     }
