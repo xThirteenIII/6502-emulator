@@ -59,7 +59,10 @@ const (
     // Increments & Decrements
     // Shifts
     // Jump & Calls
-    INS_JSR = 0x20
+    INS_JMP_ABS = 0x4C
+    INS_JMP_IND = 0x6C
+    INS_JSR_ABS = 0x20
+    INS_RTS_IMP = 0x60
 
     // Branches
     // Status Flag Changes
