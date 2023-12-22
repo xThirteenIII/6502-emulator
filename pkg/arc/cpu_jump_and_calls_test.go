@@ -55,6 +55,33 @@ func TestJSRDoesNotAffectProcessorStatus(t *testing.T){
     cpu.Memory.Data[0xFF00] = instructions.INS_JSR_ABS
     cpu.Memory.Data[0xFF01] = 0x00
     cpu.Memory.Data[0xFF02] = 0x80
+    cpu.Memory.Data[0x8000] = instructions.INS_RTS_IMP
+
+    expectedCycles := 6+6
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    // Then
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
+
+}
+
+func TestRTSDoesNotAffectProcessorStatus(t *testing.T){
+
+    // Given
+    cpu := Init6502()
+
+    // Need a lower resetVector address to run instructions
+    cpu.Reset(0xFF00)
+    cpuCopy := *cpu
+
+    // When
+    cpu.Memory.Data[0xFF00] = instructions.INS_JSR_ABS
+    cpu.Memory.Data[0xFF01] = 0x00
+    cpu.Memory.Data[0xFF02] = 0x80
 
     expectedCycles := 6
     cyclesUsed := cpu.Execute(expectedCycles)
