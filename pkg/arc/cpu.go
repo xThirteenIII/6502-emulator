@@ -637,7 +637,6 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 1
             break;
 
-
         case instructions.INS_TSX_IMP:
 
             // Copy the current contents of the accumulator into the X register and sets the zero and negative flags as appropriate.
@@ -651,12 +650,67 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             SetZeroAndNegativeFlags(cpu, cpu.X)
 
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
 
+        case instructions.INS_TXS_IMP:
 
+            // Copy the current contents of the accumulator into the X register and sets the zero and negative flags as appropriate.
+            // Implicit:
+            // For many 6502 instructions the source and destination of the information to be manipulated
+            // is implied directly by the function of the instruction itself and no further operand needs to be specified.
+            // Operations like 'Clear Carry Flag' (CLC) and 'Return from Subroutine' (RTS) are implicit.
+
+            cpu.SP = cpu.X
+            cycles--
 
             // Total cycles: 2
             // Total bytes: 1
             break;
+
+        case instructions.INS_PHA_IMP:
+
+            cpu.PushByteToStack(&cycles, cpu.A)
+
+            cycles--
+
+            // Total cycles: 3
+            // Total bytes: 1
+            break;
+
+        case instructions.INS_PHP_IMP:
+
+            cpu.PushByteToStack(&cycles, cpu.PSToByte())
+            cycles--
+
+            // Total cycles: 3
+            // Total bytes: 1
+            break;
+
+        case instructions.INS_PLA_IMP:
+
+            cpu.A = cpu.PopByteFromStack(&cycles)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            cycles-=2
+
+            // Total cycles: 4
+            // Total bytes: 1
+            break;
+
+        case instructions.INS_PLP_IMP:
+
+            PSByte := cpu.PopByteFromStack(&cycles)
+            cpu.PS = cpu.ByteToPS(PSByte)
+
+            cycles-=2
+
+            // Total cycles: 4
+            // Total bytes: 1
+            break;
+
         case instructions.INS_JSR_ABS:
 
             // Example:
@@ -860,5 +914,26 @@ func (cpu *CPU) PopWordFromStack(cycles *int) (data uint16){
 
 func (cpu *CPU) SPTo16Address(sp byte) (SP uint16){
     SP = uint16(sp) + 0x0100
+    return
+}
+
+func (cpu *CPU) PSToByte() (PS byte){
+    PS = byte(cpu.PS.C << 7) | byte(cpu.PS.Z << 6) | byte(cpu.PS.I << 5) | byte(cpu.PS.D << 4) | byte(cpu.PS.B << 3) | byte(cpu.PS.U << 2) | byte(cpu.PS.V << 1) | byte(cpu.PS.N)
+
+    return
+}
+
+func (cpu *CPU) ByteToPS(bytePS byte) (ps ProcessorStatus){
+    
+    // This is super ugly but works for now
+    ps.C = uint(bytePS >> 7)
+    ps.Z = uint((bytePS << 1) >> 7)
+    ps.I = uint((bytePS << 2) >> 7)
+    ps.D = uint((bytePS << 3) >> 7)
+    ps.B = uint((bytePS << 4) >> 7)
+    ps.U = uint((bytePS << 5) >> 7)
+    ps.V = uint((bytePS << 6) >> 7)
+    ps.N = uint((bytePS << 7) >> 7)
+
     return
 }

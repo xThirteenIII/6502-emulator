@@ -55,6 +55,12 @@ const (
 
     // Stack Operations
     INS_TSX_IMP = 0xBA
+    INS_TXS_IMP = 0x9A
+    INS_PHA_IMP = 0x48
+    INS_PHP_IMP = 0x08
+    INS_PLA_IMP = 0x68
+    INS_PLP_IMP = 0x28
+
     // Logical
     // Arithmetic
     // Increments & Decrements
