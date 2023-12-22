@@ -167,3 +167,60 @@ func TestPushWordToStack(t *testing.T){
         t.Error("Pushed: ", uint16(cpu.Memory.Data[0x01FC]) | (uint16(cpu.Memory.Data[0x01FD]) << 8), "but want: 333F")
     }
 }
+
+func TestProcessorStatusToByte(t *testing.T){
+
+    cpu := Init6502()
+    cpu.PS.C = 1
+    cpu.PS.Z = 1
+    cpu.PS.B = 1
+
+    cpuCopy := *cpu
+
+    //11001000 = 128+64+8 = 200
+
+    PS := cpu.PSToByte()
+
+    if PS != 200 {
+        t.Error("PS(byte) should be 200 but got: ", PS)
+        t.Error("PS flags: ",cpu.PS)
+    }
+
+    if cpu.PS != cpuCopy.PS {
+        t.Error("Shouldn't modify original Processor Status. Initial state: ", cpuCopy.PS, ", modified in: ", cpu.PS)
+    }
+}
+
+func TestByteToProcessorStatus(t *testing.T){
+
+    cpu := Init6502()
+
+    PS := cpu.ByteToPS(200)
+    //11001000 = 128+64+8 = 200
+
+    if PS.C != 1 {
+        t.Error("PS.C should be 1 but got:", PS.C)
+    }
+    if PS.Z != 1 {
+        t.Error("PS.Z should be 1 but got:", PS.Z)
+    }
+    if PS.I != 0 {
+        t.Error("PS.I should be 0 but got:", PS.I)
+    }
+    if PS.D != 0 {
+        t.Error("PS.D should be 0 but got:", PS.D)
+    }
+    if PS.B != 1 {
+        t.Error("PS.B should be 1 but got:", PS.B)
+    }
+    if PS.U != 0 {
+        t.Error("PS.U should be 0 but got:", PS.U)
+    }
+    if PS.V != 0 {
+        t.Error("PS.V should be 0 but got:", PS.V)
+    }
+    if PS.N != 0 {
+        t.Error("PS.N should be 0 but got:", PS.N)
+    }
+
+}
