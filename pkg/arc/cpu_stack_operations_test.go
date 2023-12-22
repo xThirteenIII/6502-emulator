@@ -165,6 +165,8 @@ func TestPLAPopsAccumulatorFromStackCorrectly(t *testing.T){
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 
+// TODO: Can pull zero value and negative value from stack and change flags accordingly
+
 func TestPLPPopsAccumulatorFromStackCorrectly(t *testing.T){
 
     // Given
