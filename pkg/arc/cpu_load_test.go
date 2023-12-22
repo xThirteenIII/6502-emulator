@@ -893,6 +893,7 @@ func CheckLoadRegisterAbsoluteYWithPageCrossing(cpu *CPU, opcode int, register *
 }
 // Confront Initial PS Registers values with values after execution.
 // These register shuould remain unmodified
+// Only Z and N registers are left out
 func CheckUnmodifiedLDAFlags(cpuCopy CPU, cpu *CPU, t *testing.T){
 
     // Confront uneffected flags

@@ -49,11 +49,12 @@ const (
     // Register Transfers
 
     INS_TAX_IMP = 0xAA
-
     INS_TAY_IMP = 0xA8
+    INS_TXA_IMP = 0x8A
+    INS_TYA_IMP = 0x98
 
-    INS_TSX_IMP = 0xBA
     // Stack Operations
+    INS_TSX_IMP = 0xBA
     // Logical
     // Arithmetic
     // Increments & Decrements
