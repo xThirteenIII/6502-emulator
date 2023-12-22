@@ -95,6 +95,60 @@ func TestRTSDoesNotAffectProcessorStatus(t *testing.T){
 
 }
 
+func TestJMPAbsoluteJumpsCorrectlyToNewAddress(t *testing.T){
+
+    // Given
+    cpu := Init6502()
+    cpuCopy := *cpu
+
+    // When
+    cpu.Memory.Data[0xFFFC] = instructions.INS_JMP_ABS
+    cpu.Memory.Data[0xFFFD] = 0x00
+    cpu.Memory.Data[0xFFFE] = 0x80
+
+    expectedCycles := 3
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    // Then
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    if cpu.PC != 0x8000 {
+        t.Error("PC should be 0x8000, but got: ", cpu.PC)
+    }
+
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
+}
+
+func TestJMPIndirectJumpsCorrectlyToNewAddress(t *testing.T){
+
+    // Given
+    cpu := Init6502()
+    cpuCopy := *cpu
+
+    // When
+    cpu.Memory.Data[0xFFFC] = instructions.INS_JMP_IND
+    cpu.Memory.Data[0xFFFD] = 0x00
+    cpu.Memory.Data[0xFFFE] = 0x80
+    cpu.Memory.Data[0x8000] = 0x33
+    cpu.Memory.Data[0x8001] = 0x44
+
+    expectedCycles := 5
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    // Then
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    if cpu.PC != 0x4433 {
+        t.Error("PC should be 0x4433, but got: ", cpu.PC)
+    }
+
+    CheckUnmodifiedlagsALL(cpuCopy, cpu, t)
+}
+
 func TestJSRAbsolute(t *testing.T){
 
     cpu := Init6502()

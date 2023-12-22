@@ -653,6 +653,23 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 1
             cycles -=3
             break;
+        case instructions.INS_JMP_ABS:
+
+            cpu.PC = cpu.AddressAbsolute(&cycles)
+
+            // Total cycles: 3
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_JMP_IND:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            cpu.PC = cpu.ReadWord(&cycles, targetAddress)
+
+            // Total cycles: 5
+            // Total bytes: 3
+            break;
 
         default:
             log.Println("At memory address: ", cpu.PC)
