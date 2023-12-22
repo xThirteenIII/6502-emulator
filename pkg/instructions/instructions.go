@@ -62,6 +62,15 @@ const (
     INS_PLP_IMP = 0x28
 
     // Logical
+    INS_AND_IM = 0x29
+    INS_AND_ZP = 0x25
+    INS_AND_ZPX = 0x35
+    INS_AND_ABS = 0x2D
+    INS_AND_ABSX = 0x3D
+    INS_AND_ABSY = 0x39
+    INS_AND_INDX = 0x21
+    INS_AND_INDY = 0x31
+
     // Arithmetic
     // Increments & Decrements
     // Shifts

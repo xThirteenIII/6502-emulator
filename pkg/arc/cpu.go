@@ -223,12 +223,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // If the zero page memory $06 contains: 00 80, then the effective address from the vector (06)
             // would be $8000
 
-            // Fetch the Zero Page Address
-            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+            // This takes 4 cycles
+            effectiveAddress := cpu.AddressIndirectX(&cycles)
 
-            // The effective address is the 
-            effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
-
+            // This takes 1 cycle
             LoadRegisterAndSetStatusFlags(cpu, &cycles,effectiveAddress, &cpu.A)
 
             // Total cycles: 6
@@ -236,14 +234,10 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
         case instructions.INS_LDA_INDY:
 
-            // Fetch the Zero Page Address
-            zeroPageAddress := cpu.FetchByte(&cycles)
+            // This takes 3+1 cycles
+            effectiveAddress := cpu.AddressIndirectY(&cycles)
 
-            effectiveAddress := cpu.ReadWord(&cycles, uint16(zeroPageAddress))
-
-            // Add Y to the Effective Address
-            AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, &cycles)
-
+            // This takes 1 cycle
             LoadRegisterAndSetStatusFlags(cpu, &cycles,effectiveAddress, &cpu.A)
 
             // Total cycles: 5(+1 if page crossed)
@@ -251,6 +245,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
 
         case instructions.INS_LDX_IM:
+
             // Load value into X
             cpu.X = cpu.FetchByte(&cycles)
 
@@ -453,14 +448,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // If the zero page memory $06 contains: 00 80, then the effective address from the vector (06)
             // would be $8000
 
-            // Fetch the Zero Page Address
-            zeroPageAddress := cpu.AddressZeroPage(&cycles)
-
-            zeroPageAddress += uint16(cpu.X)
-            cycles--
-
-            // The effective address is the 
-            effectiveAddress := cpu.ReadWord(&cycles, zeroPageAddress)
+            effectiveAddress := cpu.AddressIndirectX(&cycles)
 
             cpu.WriteByte(&cycles, cpu.A, effectiveAddress)
 
@@ -766,6 +754,99 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 3
             break;
 
+        case instructions.INS_AND_IM:
+
+            cpu.A = cpu.A & cpu.FetchByte(&cycles)
+
+            // Total cycles: 2
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 3
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 4
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+        
+        case instructions.INS_AND_ABS:
+
+            absoluteAddress := cpu.AddressAbsolute(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_ABSX:
+
+            absoluteAddress := cpu.AddressAbsoluteX(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_ABSY:
+
+            absoluteAddress := cpu.AddressAbsoluteY(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_INDX:
+
+            effectiveAddress := cpu.AddressIndirectX(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_AND_INDY:
+
+            effectiveAddress := cpu.AddressIndirectY(&cycles)
+
+            cpu.A = cpu.A & cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 5+1
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
         default:
             log.Println("At memory address: ", cpu.PC)
 
@@ -890,6 +971,30 @@ func (cpu *CPU) AddressAbsoluteY(cycles *int) uint16{
             AddRegValueToTarget16Address(cpu.Y, &targetAddress, cycles)
 
             return targetAddress
+}
+
+func (cpu *CPU) AddressIndirectX(cycles *int) uint16{
+
+        // Fetch the Zero Page Address and add X
+        zeroPageAddress := cpu.AddressZeroPageX(cycles)
+
+        // The effective address is the 
+        effectiveAddress := cpu.ReadWord(cycles, zeroPageAddress)
+
+        return effectiveAddress
+}
+
+func (cpu *CPU) AddressIndirectY(cycles *int) uint16{
+
+        // Fetch the Zero Page Address
+        zeroPageAddress := cpu.FetchByte(cycles)
+
+        effectiveAddress := cpu.ReadWord(cycles, uint16(zeroPageAddress))
+
+        // Add Y to the Effective Address
+        AddRegValueToTarget16Address(cpu.Y, &effectiveAddress, cycles)
+
+        return effectiveAddress
 }
 
 func (cpu *CPU) PushByteToStack(cycles *int, data byte) {
