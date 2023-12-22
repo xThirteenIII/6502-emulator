@@ -47,6 +47,8 @@ func (cpu *CPU) ReadByteFromStack(cycles *int) byte{
     return data
 }
 
+// TODO: does this need to be Fetch instead of Read?
+// Do we need to increment the PC here?
 func (cpu *CPU) ReadWordFromStack( cycles *int) uint16{
 
     // Read low byte of address (LSB)
