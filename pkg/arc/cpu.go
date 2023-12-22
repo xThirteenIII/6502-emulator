@@ -79,7 +79,7 @@ func (cpu *CPU) Reset(resetVector uint16){
     // Commodor 64.
 
     // Reset vector address
-    cpu.PC = 0xFFFC
+    cpu.PC = resetVector
 
     // Clear all flags
     cpu.PS.C = 0
@@ -642,6 +642,16 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_RTS_IMP:
             cpu.PC = cpu.PopWordFromStack(&cycles)
+
+            // This is necessary since we want to Execute next instruction in the next loop iteration
+            // If I don't increase the PC, it will run the same execution stored in the SP
+            cpu.PC++
+
+            // TODO: why is this necessary to reach a total of 6 cycles? What happens?
+
+            // Total cycles: 6
+            // Total bytes: 1
+            cycles -=3
             break;
 
         default:

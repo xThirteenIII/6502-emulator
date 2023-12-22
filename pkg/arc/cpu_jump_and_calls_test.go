@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-/*
 func TestJumpToSubroutineAndComeBack(t *testing.T){
 
     want := byte(0x33)
@@ -23,7 +22,7 @@ func TestJumpToSubroutineAndComeBack(t *testing.T){
     cpu.Memory.Data[0xFF03] = instructions.INS_LDA_IM
     cpu.Memory.Data[0xFF04] = want
 
-    expectedCycles := 6+3+2
+    expectedCycles := 6+6+2
     cyclesUsed := cpu.Execute(expectedCycles)
 
     // Then
@@ -34,7 +33,7 @@ func TestJumpToSubroutineAndComeBack(t *testing.T){
     if cpu.A != want{
         t.Error("Want A: ", want, " but got: ", cpu.A)
     }
-}*/
+}
 
 func TestJSRAbsolute(t *testing.T){
 
