@@ -847,6 +847,195 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Set LDA status flags
             SetZeroAndNegativeFlags(cpu, cpu.A)
             break;
+
+        case instructions.INS_EOR_IM:
+
+            cpu.A = cpu.A ^ cpu.FetchByte(&cycles)
+
+            // Total cycles: 2
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 3
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 4
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+        
+        case instructions.INS_EOR_ABS:
+
+            absoluteAddress := cpu.AddressAbsolute(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_ABSX:
+
+            absoluteAddress := cpu.AddressAbsoluteX(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_ABSY:
+
+            absoluteAddress := cpu.AddressAbsoluteY(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_INDX:
+
+            effectiveAddress := cpu.AddressIndirectX(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_EOR_INDY:
+
+            effectiveAddress := cpu.AddressIndirectY(&cycles)
+
+            cpu.A = cpu.A ^ cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 5+1
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_IM:
+
+            cpu.A = cpu.A | cpu.FetchByte(&cycles)
+
+            // Total cycles: 2
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 3
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, zeroPageAddress)
+
+            // Total cycles: 4
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+        
+        case instructions.INS_ORA_ABS:
+
+            absoluteAddress := cpu.AddressAbsolute(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_ABSX:
+
+            absoluteAddress := cpu.AddressAbsoluteX(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_ABSY:
+
+            absoluteAddress := cpu.AddressAbsoluteY(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, absoluteAddress)
+
+            // Total cycles: 4+1
+            // Total bytes: 3
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_INDX:
+
+            effectiveAddress := cpu.AddressIndirectX(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
+        case instructions.INS_ORA_INDY:
+
+            effectiveAddress := cpu.AddressIndirectY(&cycles)
+
+            cpu.A = cpu.A | cpu.ReadByte(&cycles, effectiveAddress)
+
+            // Total cycles: 5+1
+            // Total bytes: 2
+            // Set LDA status flags
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+            break;
+
         default:
             log.Println("At memory address: ", cpu.PC)
 

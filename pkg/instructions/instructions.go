@@ -71,6 +71,23 @@ const (
     INS_AND_INDX = 0x21
     INS_AND_INDY = 0x31
 
+    INS_EOR_IM = 0x49
+    INS_EOR_ZP = 0x45
+    INS_EOR_ZPX = 0x55
+    INS_EOR_ABS = 0x4D
+    INS_EOR_ABSX = 0x5D
+    INS_EOR_ABSY = 0x59
+    INS_EOR_INDX = 0x41
+    INS_EOR_INDY = 0x51
+
+    INS_ORA_IM = 0x09
+    INS_ORA_ZP = 0x05
+    INS_ORA_ZPX = 0x15
+    INS_ORA_ABS = 0x0D
+    INS_ORA_ABSX = 0x1D
+    INS_ORA_ABSY = 0x19
+    INS_ORA_INDX = 0x01
+    INS_ORA_INDY = 0x11
     // Arithmetic
     // Increments & Decrements
     // Shifts
