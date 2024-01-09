@@ -730,7 +730,7 @@ func CheckLoadRegisterAbsoluteX(cpu *CPU, opcode int, register *byte, t *testing
 
     // then
     if *register != want {
-        t.Error("A: Want ", want, " instead got ", *register)
+        t.Error("register: Want ", want, " instead got ", *register)
     }
 
     if cpu.PS.Z != 0 {

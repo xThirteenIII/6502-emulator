@@ -88,6 +88,10 @@ const (
     INS_ORA_ABSY = 0x19
     INS_ORA_INDX = 0x01
     INS_ORA_INDY = 0x11
+
+    INS_BIT_ZP = 0x24
+    INS_BIT_ABS = 0x2C
+
     // Arithmetic
     // Increments & Decrements
     // Shifts

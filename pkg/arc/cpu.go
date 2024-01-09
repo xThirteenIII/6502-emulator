@@ -1035,6 +1035,31 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Set LDA status flags
             SetZeroAndNegativeFlags(cpu, cpu.A)
             break;
+        
+        case instructions.INS_BIT_ZP:
+
+            zeropageAddress := cpu.AddressZeroPage(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, zeropageAddress)
+
+            if cpu.A | memValue == 0 {
+                cpu.PS.Z = 0
+            }
+
+            // Flag V is set to bit 6 of the memory value
+
+
+            // Flag N is set to bit 7 of the memory value
+
+
+
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+        case instructions.INS_BIT_ABS:
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
 
         default:
             log.Println("At memory address: ", cpu.PC)
@@ -1078,9 +1103,8 @@ func AddRegValueToTarget16Address(value byte, address *uint16, cycles *int){
     // different from the high byte of the calculated address after adding the X register.
     // If a page boundary is crossed, an additional cycle is required.
 
-    originalHighByte := (*address >> 8)
-    
-    // Add value to address
+    originalHighByte := (*address >> 8) // Add value to address *address += uint16(value)
+
     *address += uint16(value)
 
     newHighByte := (*address >> 8)
@@ -1212,7 +1236,10 @@ func (cpu *CPU) SPTo16Address(sp byte) (SP uint16){
 }
 
 func (cpu *CPU) PSToByte() (PS byte){
-    PS = byte(cpu.PS.C << 7) | byte(cpu.PS.Z << 6) | byte(cpu.PS.I << 5) | byte(cpu.PS.D << 4) | byte(cpu.PS.B << 3) | byte(cpu.PS.U << 2) | byte(cpu.PS.V << 1) | byte(cpu.PS.N)
+
+    // e.g.: 200 = 11001000
+    // 00000000 | 00000000 | 00000000 | 00001000 | 00000000 | 00000000 | 01000000 | 10000000 = 11001000
+    PS = byte(cpu.PS.C) | byte(cpu.PS.Z << 1) | byte(cpu.PS.I << 2) | byte(cpu.PS.D << 3) | byte(cpu.PS.B << 4) | byte(cpu.PS.U << 5) | byte(cpu.PS.V << 6) | byte(cpu.PS.N << 7)
 
     return
 }
@@ -1220,14 +1247,14 @@ func (cpu *CPU) PSToByte() (PS byte){
 func (cpu *CPU) ByteToPS(bytePS byte) (ps ProcessorStatus){
     
     // This is super ugly but works for now
-    ps.C = uint(bytePS >> 7)
-    ps.Z = uint((bytePS << 1) >> 7)
-    ps.I = uint((bytePS << 2) >> 7)
-    ps.D = uint((bytePS << 3) >> 7)
-    ps.B = uint((bytePS << 4) >> 7)
-    ps.U = uint((bytePS << 5) >> 7)
-    ps.V = uint((bytePS << 6) >> 7)
-    ps.N = uint((bytePS << 7) >> 7)
+    ps.C = uint((bytePS << 7) >> 7)
+    ps.Z = uint((bytePS << 6) >> 7)
+    ps.I = uint((bytePS << 5) >> 7)
+    ps.D = uint((bytePS << 4) >> 7)
+    ps.B = uint((bytePS << 3) >> 7)
+    ps.U = uint((bytePS << 2) >> 7)
+    ps.V = uint((bytePS << 1) >> 7)
+    ps.N = uint(bytePS >> 7)
 
     return
 }
