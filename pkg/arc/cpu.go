@@ -1042,21 +1042,41 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             memValue := cpu.ReadByte(&cycles, zeropageAddress)
 
-            if cpu.A | memValue == 0 {
+            if (cpu.A & memValue) == 0 {
+                cpu.PS.Z = 1
+            }else {
                 cpu.PS.Z = 0
             }
 
             // Flag V is set to bit 6 of the memory value
+            cpu.PS.V = uint((memValue << 1) >> 7)
 
 
             // Flag N is set to bit 7 of the memory value
-
-
+            cpu.PS.N = uint(memValue >> 7)
 
             // Total cycles: 3
             // Total bytes: 2
             break;
         case instructions.INS_BIT_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            if (cpu.A & memValue) == 0 {
+                cpu.PS.Z = 1
+            }else {
+                cpu.PS.Z = 0
+            }
+
+            // Flag V is set to bit 6 of the memory value
+            cpu.PS.V = uint((memValue << 1) >> 7)
+
+
+            // Flag N is set to bit 7 of the memory value
+            cpu.PS.N = uint(memValue >> 7)
+
             // Total cycles: 4
             // Total bytes: 3
             break;
