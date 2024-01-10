@@ -105,7 +105,7 @@ func (cpu *CPU) Reset(resetVector uint16){
 }
 
 
-func (cpu *CPU) PrintValues(){
+func (cpu *CPU) PrintStatus(){
     fmt.Println("PC:", cpu.PC)
     fmt.Println("SP:", cpu.SP)
     fmt.Println("PS:", cpu.PS)
@@ -1277,4 +1277,28 @@ func (cpu *CPU) ByteToPS(bytePS byte) (ps ProcessorStatus){
     ps.N = uint(bytePS >> 7)
 
     return
+}
+
+// LoadProgram loads an array of bytes (program) into memory
+func (cpu *CPU) LoadProgram(program []byte){
+
+    // first two bytes address the PC
+    lo := uint16(program[0])
+    hi := uint16(program[1]) << 8
+    loadAddress := lo | hi
+
+    // We set PC here, don't know if it's correct
+    // TODO: find a place for setting program counter
+    cpu.PC = loadAddress
+
+    // Load following bytes into memory
+    for i, byte := range program {
+
+        if i > 1 {
+
+            cpu.Memory.Data[loadAddress] = byte
+
+            loadAddress++
+        }
+    }
 }
