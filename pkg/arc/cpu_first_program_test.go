@@ -1,6 +1,8 @@
 package arc
 
-import "testing"
+import (
+	"testing"
+)
 
 // Emulating program that we know that works:
 // pc is @ $1000
@@ -47,9 +49,16 @@ func TestProgramIsLoadedIntoMemory(t *testing.T){
 }
 
 func TestProgramIsLoadedIntoMemoryAndExecuted(t *testing.T){
+
+    clock := 1000
     
     cpu := Init6502()
 
     // when
     cpu.LoadProgram(testProgram)
+
+    for clock > 0 {
+
+        clock -= cpu.Execute(1)
+    }
 }
