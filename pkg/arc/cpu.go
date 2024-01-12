@@ -1156,9 +1156,11 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_INX_IMP:
 
-            cpu.X += 1
+            cpu.X++
             cycles--
+
             SetZeroAndNegativeFlags(cpu, cpu.X)
+
             // Total cycles: 2
             // Total bytes: 1
             break;
