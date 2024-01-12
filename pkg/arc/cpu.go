@@ -1261,6 +1261,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 2
             // Total bytes: 1
             break;
+
         default:
             log.Println("At memory address: ", cpu.PC)
 
