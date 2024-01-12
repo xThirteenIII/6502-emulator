@@ -101,6 +101,13 @@ const (
     INS_INX_IMP = 0xE8
     INS_INY_IMP = 0xC8
 
+    INS_DEC_ZP = 0xC6
+    INS_DEC_ZPX = 0xD6
+    INS_DEC_ABS = 0xCE
+    INS_DEC_ABSX = 0xDE
+    INS_DEX_IMP = 0xCA
+    INS_DEY_IMP = 0x88
+
     // Shifts
     // Jump & Calls
     INS_JMP_ABS = 0x4C

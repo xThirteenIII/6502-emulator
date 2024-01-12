@@ -1164,7 +1164,98 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             break;
         case instructions.INS_INY_IMP:
 
-            cpu.X += 1
+            cpu.Y += 1
+            cycles--
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
+
+        case instructions.INS_DEC_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            memValue--
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, zeroPageAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 5
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_DEC_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            memValue--
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, zeroPageAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_DEC_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            memValue--
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, targetAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 6
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_DEC_ABSX:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            targetAddress += uint16(cpu.X)
+            cycles--
+
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            memValue--
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, targetAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 7
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_DEX_IMP:
+
+            cpu.X -= 1
+            cycles--
+            SetZeroAndNegativeFlags(cpu, cpu.X)
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
+        case instructions.INS_DEY_IMP:
+
+            cpu.Y -= 1
             cycles--
             SetZeroAndNegativeFlags(cpu, cpu.Y)
             // Total cycles: 2
