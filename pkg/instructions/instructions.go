@@ -94,6 +94,13 @@ const (
 
     // Arithmetic
     // Increments & Decrements
+    INS_INC_ZP = 0xE6
+    INS_INC_ZPX = 0xF6
+    INS_INC_ABS = 0xEE
+    INS_INC_ABSX = 0xFE
+    INS_INX_IMP = 0xE8
+    INS_INY_IMP = 0xC8
+
     // Shifts
     // Jump & Calls
     INS_JMP_ABS = 0x4C

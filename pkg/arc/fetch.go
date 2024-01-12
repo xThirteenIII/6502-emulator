@@ -21,6 +21,7 @@ func (cpu *CPU) FetchByte( cycles *int) byte{
     return data
 }
 
+// FetchWord consumes 2 clock cycles
 func (cpu *CPU) FetchWord( cycles *int) uint16{
 
     if cpu.PC > MaxMem-1 {

@@ -1080,7 +1080,96 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 4
             // Total bytes: 3
             break;
+        case instructions.INS_INC_ZP:
 
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            memValue++
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, zeroPageAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 5
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_INC_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            memValue++
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, zeroPageAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_INC_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            memValue++
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, targetAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 6
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_INC_ABSX:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+
+            targetAddress += uint16(cpu.X)
+            cycles--
+
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            memValue++
+
+            cycles--
+
+            cpu.WriteByte(&cycles, memValue, targetAddress)
+
+            SetZeroAndNegativeFlags(cpu, memValue)
+
+            // Total cycles: 7
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_INX_IMP:
+
+            cpu.X += 1
+            cycles--
+            SetZeroAndNegativeFlags(cpu, cpu.X)
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
+        case instructions.INS_INY_IMP:
+
+            cpu.X += 1
+            cycles--
+            SetZeroAndNegativeFlags(cpu, cpu.Y)
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
         default:
             log.Println("At memory address: ", cpu.PC)
 
@@ -1150,12 +1239,14 @@ func StoreRegistersIntoMemoryAddress(cpu *CPU, cycles *int, address uint16, regi
 }
 
 // Fetches ZeroPage Address when in Addressing Mode - Zero Page 
+// Consumes 1 clock cycle
 func (cpu *CPU) AddressZeroPage(cycles *int) uint16{
 
     return uint16(cpu.FetchByte(cycles))
 }
 
 // Fetches ZeroPage Address when in Addressing Mode - Zero Page with X offset
+// Consumes 2 clock cycles
 func (cpu *CPU) AddressZeroPageX(cycles *int) uint16{
 
             zeroPageAddress := cpu.FetchByte(cycles)
@@ -1167,6 +1258,7 @@ func (cpu *CPU) AddressZeroPageX(cycles *int) uint16{
 }
 
 // Fetches ZeroPage Address when in Addressing Mode - Zero Page with Y offset
+// Consumes 2 clock cycles
 func (cpu *CPU) AddressZeroPageY(cycles *int) uint16{
 
             zeroPageAddress := cpu.FetchByte(cycles)
@@ -1179,12 +1271,14 @@ func (cpu *CPU) AddressZeroPageY(cycles *int) uint16{
 }
 
 // Fetches Absolute Address when in Addressing Mode - Absolute
+// Consumes 2 clock cycles
 func (cpu *CPU) AddressAbsolute(cycles *int) uint16{
 
             return uint16(cpu.FetchWord(cycles))
 }
 
 // Fetches Absolute Address when in Addressing Mode - Absolute with X offset
+// Consumes 2(+1) clock cycles
 func (cpu *CPU) AddressAbsoluteX(cycles *int) uint16{
 
             targetAddress := uint16(cpu.FetchWord(cycles))
