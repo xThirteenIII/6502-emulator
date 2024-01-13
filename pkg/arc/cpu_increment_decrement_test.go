@@ -184,6 +184,37 @@ func TestINXIncrementsXRegisterCorrectly(t *testing.T){
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 
+func TestINXIncrements255Correctly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 0
+    cpu.PS.N = 1
+    cpu.X = 0xFF
+    cpuCopy := *cpu
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_INX_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.X != 0x00 {
+        t.Error("Expected X to be 0x45 instead got: ", cpu.X)
+    }
+
+    if cpu.PS.Z != 1 {
+        t.Error("Zero flag should be 1 but instead got 1")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but instead got 1")
+    }
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
 func TestINYIncrementsXRegisterCorrectly(t *testing.T){
     
     cpu := Init6502()
