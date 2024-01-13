@@ -116,6 +116,8 @@ const (
     INS_RTS_IMP = 0x60
 
     // Branches
+    INS_BEQ_REL = 0xF0
+
     // Status Flag Changes
     // System Functions
 
