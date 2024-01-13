@@ -202,11 +202,42 @@ func TestINXIncrements255Correctly(t *testing.T){
     }
 
     if cpu.X != 0x00 {
-        t.Error("Expected X to be 0x45 instead got: ", cpu.X)
+        t.Error("Expected X to be 0x00 instead got: ", cpu.X)
     }
 
     if cpu.PS.Z != 1 {
         t.Error("Zero flag should be 1 but instead got 1")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but instead got 1")
+    }
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func TestINXIncrementsZeroCorrectly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
+    cpu.X = 0x00
+    cpuCopy := *cpu
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_INX_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.X != 0x01 {
+        t.Error("Expected X to be 0x01 instead got: ", cpu.X)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but instead got 1")
     }
 
     if cpu.PS.N != 0 {
@@ -244,6 +275,68 @@ func TestINYIncrementsXRegisterCorrectly(t *testing.T){
         t.Error("Negative flag should be 0 but instead got 1")
     }
 
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func TestINYIncrements255Correctly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 0
+    cpu.PS.N = 1
+    cpu.Y = 0xFF
+    cpuCopy := *cpu
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_INY_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.Y != 0x00 {
+        t.Error("Expected Y to be 0x00 instead got: ", cpu.Y)
+    }
+
+    if cpu.PS.Z != 1 {
+        t.Error("Zero flag should be 1 but instead got 1")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but instead got 1")
+    }
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func TestINYIncrementsZeroCorrectly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 1
+    cpu.PS.N = 1
+    cpu.Y = 0x00
+    cpuCopy := *cpu
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_INY_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.Y != 0x01 {
+        t.Error("Expected Y to be 0x01 instead got: ", cpu.Y)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but instead got 1")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but instead got 1")
+    }
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 
