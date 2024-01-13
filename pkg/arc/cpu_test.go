@@ -69,7 +69,7 @@ func TestCPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstruction(t *testing.
 
     // then
     // When executing Execute(1) returns 1 - (-1) = 2 and that should pass the test
-    // Even the parameter passed is 1, it executes required cycles anyways
+    // Even if the parameter passed is 1, it executes required cycles anyways
     if cyclesUsed != 2 {
         t.Error("Couldn't run at least 1 cycle")
     }
