@@ -519,6 +519,39 @@ func TestDEXDecrementsXRegisterCorrectly(t *testing.T){
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
 }
 
+func TestDEXDecrementsZeroCorrectly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 1
+    cpu.PS.N = 0
+    cpu.X = 0x00
+    cpuCopy := *cpu
+
+    // TODO: Should 0 - 1 wrap to 0xFF? Is that correct?
+    cpu.Memory.Data[0xFFFC] = instructions.INS_DEX_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.X != 0xFF {
+        t.Error("Expected X to be 0xFF instead got: ", cpu.X)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but instead got 1")
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but instead got 0")
+    }
+
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
 func TestDEYDecrementsXRegisterCorrectly(t *testing.T){
     
     cpu := Init6502()
@@ -546,6 +579,39 @@ func TestDEYDecrementsXRegisterCorrectly(t *testing.T){
 
     if cpu.PS.N != 0 {
         t.Error("Negative flag should be 0 but instead got 1")
+    }
+
+    CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
+}
+
+func TestDEYDecrementsZeroCorrectly(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.Z = 1
+    cpu.PS.N = 0
+    cpu.Y = 0x00
+    cpuCopy := *cpu
+
+    // TODO: Should 0 - 1 wrap to 0xFF? Is that correct?
+    cpu.Memory.Data[0xFFFC] = instructions.INS_DEY_IMP
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.Y != 0xFF {
+        t.Error("Expected Y to be 0xFF instead got: ", cpu.Y)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but instead got 1")
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but instead got 0")
     }
 
     CheckUnmodifiedLDAFlags(cpuCopy, cpu, t)
