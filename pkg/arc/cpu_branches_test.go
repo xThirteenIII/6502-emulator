@@ -10,21 +10,22 @@ func TestBEQSumsCorrectlyToProgramCounter(t *testing.T){
     
     cpu := Init6502()
     cpu.Reset(0x1000)
-    cpu.PS.Z = 1
+    cpu.X = 1
 
-    cpu.Memory.Data[0x1000] = instructions.INS_BEQ_REL
-    cpu.Memory.Data[0x1001] = 0x33
+    cpu.Memory.Data[0x1000] = instructions.INS_DEX_IMP
+    cpu.Memory.Data[0x1001] = instructions.INS_BEQ_REL
+    cpu.Memory.Data[0x1002] = 0x33
 
     // No Page crossing happens so it takes 3 cycles
-    expectedCycles := 3
+    expectedCycles := 2+3
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    if cpu.PC != 0x1035 {
-        t.Error("PC should be 0x1035 instead got: ", cpu.PC)
+    if cpu.PC != 0x1036 {
+        t.Error("PC should be 0x1036 instead got: ", cpu.PC)
     }
 }
 
@@ -32,21 +33,21 @@ func TestBEQDoesNotModifyPCIfZeroFlagIsClear(t *testing.T){
     
     cpu := Init6502()
     cpu.Reset(0x1000)
-    cpu.PS.Z = 0
+    cpu.X = 0
 
-    cpu.Memory.Data[0x1000] = instructions.INS_BEQ_REL
-    cpu.Memory.Data[0x1001] = 0x33
+    cpu.Memory.Data[0x1000] = instructions.INS_INX_IMP
+    cpu.Memory.Data[0x1001] = instructions.INS_BEQ_REL
+    cpu.Memory.Data[0x1002] = 0x33
 
-    // No Page crossing happens so it takes 3 cycles
-    expectedCycles := 2
+    expectedCycles := 2+2
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    if cpu.PC != 0x1002 {
-        t.Error("PC should be 0x1002 instead got: ", cpu.PC)
+    if cpu.PC != 0x1003 {
+        t.Error("PC should be 0x1003 instead got: ", cpu.PC)
     }
 }
 
@@ -54,43 +55,44 @@ func TestBEQSumsCorrectlyZeroToProgramCounter(t *testing.T){
     
     cpu := Init6502()
     cpu.Reset(0x1000)
-    cpu.PS.Z = 1
+    cpu.X = 1
 
-    cpu.Memory.Data[0x1000] = instructions.INS_BEQ_REL
-    cpu.Memory.Data[0x1001] = 0x00
+    cpu.Memory.Data[0x1000] = instructions.INS_DEX_IMP
+    cpu.Memory.Data[0x1001] = instructions.INS_BEQ_REL
+    cpu.Memory.Data[0x1002] = 0x00
 
     // No Page crossing happens so it takes 3 cycles
-    expectedCycles := 3
+    expectedCycles := 2+3
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    if cpu.PC != 0x1002 {
-        t.Error("PC should be 0x1002 instead got: ", cpu.PC)
+    if cpu.PC != 0x1003 {
+        t.Error("PC should be 0x1003 instead got: ", cpu.PC)
     }
 }
 
 func TestBEQSumsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
     
     cpu := Init6502()
-    cpu.Reset(0xFEFC)
-    cpu.PS.Z = 1
+    cpu.Reset(0xFEFB)
+    cpu.X = 1
 
-
+    cpu.Memory.Data[0xFEFB] = instructions.INS_DEX_IMP
     cpu.Memory.Data[0xFEFC] = instructions.INS_BEQ_REL
     cpu.Memory.Data[0xFEFD] = 0x33
 
     // Page crossing happens so it takes 4 cycles
-    expectedCycles := 4
+    expectedCycles := 2+4
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    // Since at this point PC is 0xFFFE, 0xFFFE+0x33 = 0x31 with wrap around
+    // Since at this point PC is 0xFEFE, 0xFEFE+0x33 = 0xFF31 with wrap around
     if cpu.PC != 0xFF31 {
         t.Error("PC should be 0xFF31 instead got: ", cpu.PC)
     }
@@ -99,19 +101,21 @@ func TestBEQSumsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
 func TestBEQSubtractsCorrectlyToProgramCounterWithoutPageCrossing(t *testing.T){
     
     cpu := Init6502()
-    cpu.PS.Z = 1
+    cpu.X = 1
 
-    cpu.Memory.Data[0xFFFC] = instructions.INS_BEQ_REL
-    cpu.Memory.Data[0xFFFD] = common.Int8ToByte(-122)
+    cpu.Memory.Data[0xFFFC] = instructions.INS_DEX_IMP
+    cpu.Memory.Data[0xFFFD] = instructions.INS_BEQ_REL
+    cpu.Memory.Data[0xFFFE] = common.Int8ToByte(-122)
 
-    expectedCycles := 3
+
+    expectedCycles := 2+3
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    if cpu.PC != 0xFF84 {
+    if cpu.PC != 0xFF85 {
         t.Error("PC should be 0xFF84 instead got: ", cpu.PC)
     }
 }
@@ -120,19 +124,20 @@ func TestBEQSubtractsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
     
     cpu := Init6502()
     cpu.Reset(0xFF0C)
-    cpu.PS.Z = 1
+    cpu.X = 1
 
-    cpu.Memory.Data[0xFF0C] = instructions.INS_BEQ_REL
-    cpu.Memory.Data[0xFF0D] = common.Int8ToByte(-122)
+    cpu.Memory.Data[0xFF0C] = instructions.INS_DEX_IMP
+    cpu.Memory.Data[0xFF0D] = instructions.INS_BEQ_REL    
+    cpu.Memory.Data[0xFF0E] = common.Int8ToByte(-122)
 
-    expectedCycles := 4
+    expectedCycles := 2+4
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed {
         t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
     }
 
-    if cpu.PC != 0xFE94 {
+    if cpu.PC != 0xFE95 {
         t.Error("PC should be 0xFE94 instead got: ", cpu.PC)
     }
 }
