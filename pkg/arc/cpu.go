@@ -1277,30 +1277,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_BNE_REL:
 
             signedOffset := cpu.FetchSignedByte(&cycles)
-
-            // If zero flag is set, add signed int to program counter
-            if cpu.PS.Z == 0{
-
-                cycles--
-
-                // Add 8 signed int to uint 16. How?
-                // Cast int8 and uint16 to int16
-                // Sum 
-                // Cast back result to uint16
-
-                
-                // If original high byte is different from new high byte, there's been 
-                // a page crossing. +1 cycles
-                originalHi := cpu.PC >> 8
-
-                cpu.PC = uint16(int16(signedOffset) + int16(cpu.PC))
-
-                if originalHi != cpu.PC >> 8 {
-                    cycles--    
-                }
-
-                // If to a new page, takes one cycle
-            }
+            cpu.BranchIf(cpu.PS.Z, 0, signedOffset, &cycles)
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
             // Total bytes: 2
