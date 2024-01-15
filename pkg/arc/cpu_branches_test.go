@@ -136,3 +136,32 @@ func TestBEQSubtractsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
         t.Error("PC should be 0xFE94 instead got: ", cpu.PC)
     }
 }
+
+func TestBEQWorksWithAssembleProgram(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0xFF0C)
+    cpu.PS.Z = 1
+
+    /*
+    loop
+    lda #0
+    beq loop
+    */
+
+    cpu.Memory.Data[0xFF0C] = instructions.INS_LDA_IM
+    cpu.Memory.Data[0xFF0D] = 0x00
+    cpu.Memory.Data[0xFF0E] = 0xF0
+    cpu.Memory.Data[0xFF0F] = 0xFC // this goes backwards 4 bytes
+
+    expectedCycles := 3+2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0xFF0C {
+        t.Error("PC should be 0xFF0C instead got: ", cpu.PC)
+    }
+}
