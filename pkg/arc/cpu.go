@@ -1267,31 +1267,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_BEQ_REL:
 
             signedOffset := cpu.FetchSignedByte(&cycles)
+            cpu.BranchIf(cpu.PS.Z, 1, signedOffset, &cycles)
 
-            // If zero flag is set, add signed int to program counter
-            if cpu.PS.Z == 1{
-
-                cycles--
-
-                // Add 8 signed int to uint 16. How?
-                // Cast int8 and uint16 to int16
-                // Sum 
-                // Cast back result to uint16
-
-                
-                // If original high byte is different from new high byte, there's been 
-                // a page crossing. +1 cycles
-                originalHi := cpu.PC >> 8
-
-                cpu.PC = uint16(int16(signedOffset) + int16(cpu.PC))
-
-                if originalHi != cpu.PC >> 8 {
-                    cycles--    
-                }
-
-                // If to a new page, takes one cycle
-
-            }
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
             // Total bytes: 2
@@ -1506,6 +1483,33 @@ func (cpu *CPU) PopWordFromStack(cycles *int) (data uint16){
 func (cpu *CPU) SPTo16Address(sp byte) (SP uint16){
     SP = uint16(sp) + 0x0100
     return
+}
+
+// TODO: handle value and condition as bool maybe? That would mean change the PS structure
+func (cpu *CPU) BranchIf(value , condition uint, offset int8, cycles *int){
+
+            // If value meets the condition, jump to another space in memory
+            if value == condition{
+
+                *cycles--
+
+                // Add 8 signed int to uint 16. How?
+                // Cast int8 and uint16 to int16
+                // Sum 
+                // Cast back result to uint16
+
+                
+                // If original high byte is different from new high byte, there's been 
+                // a page crossing. +1 cycles
+                originalHi := cpu.PC >> 8
+
+                cpu.PC = uint16(int16(offset) + int16(cpu.PC))
+
+                // If to a new page, takes one cycle
+                if originalHi != cpu.PC >> 8 {
+                    *cycles--    
+                }
+            }
 }
 
 func (cpu *CPU) PSToByte() (PS byte){
