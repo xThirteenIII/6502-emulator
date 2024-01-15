@@ -28,7 +28,7 @@ func TestBEQSumsCorrectlyToProgramCounter(t *testing.T){
     }
 }
 
-func TestBEQDoesNotModifyPCIfZeroFlagIsNotSet(t *testing.T){
+func TestBEQDoesNotModifyPCIfZeroFlagIsClear(t *testing.T){
     
     cpu := Init6502()
     cpu.Reset(0x1000)

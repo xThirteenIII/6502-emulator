@@ -24,6 +24,10 @@ type Memory struct {
    Data [MaxMem]byte
 }
 
+// These variables are used for checking flags
+const cleared = 0
+const set = 1
+
 
 
 func (mem *Memory) Initialise(){
@@ -1266,7 +1270,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_BEQ_REL:
 
-            cpu.BranchIf(cpu.PS.Z, 1, &cycles)
+            cpu.BranchIf(cpu.PS.Z, set, &cycles)
 
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
@@ -1275,11 +1279,67 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_BNE_REL:
 
-            cpu.BranchIf(cpu.PS.Z, 0, &cycles)
+            cpu.BranchIf(cpu.PS.Z, cleared, &cycles)
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
             // Total bytes: 2
             break;
+
+        case instructions.INS_BCC_REL:
+
+            // Branch if carry flag is clear
+            cpu.BranchIf(cpu.PS.C, cleared, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_BCS_REL:
+
+            // Branch if carry flag is set
+            cpu.BranchIf(cpu.PS.C, set, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_BPL_REL:
+
+            // Branch if negative flag is clear
+            cpu.BranchIf(cpu.PS.N, cleared, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_BMI_REL:
+
+            // Branch if negative flag is set
+            cpu.BranchIf(cpu.PS.N, set, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_BVC_REL:
+
+            // Branch if overflow flag is clear
+            cpu.BranchIf(cpu.PS.V, cleared, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_BVS_REL:
+
+            // Branch if overflow flag is set
+            cpu.BranchIf(cpu.PS.V, set, &cycles)
+
+            // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
+            // Total bytes: 2
+            break;
+
+        //TODO: BRK instruction
 
         default:
             log.Println("At memory address: ", cpu.PC)

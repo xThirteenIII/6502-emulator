@@ -118,6 +118,14 @@ const (
     // Branches
     INS_BEQ_REL = 0xF0
     INS_BNE_REL = 0xD0
+    INS_BCC_REL = 0x90
+    INS_BCS_REL = 0xB0
+    INS_BMI_REL = 0x30
+    INS_BPL_REL = 0x10
+    INS_BVC_REL = 0x50
+    INS_BVS_REL = 0x70
+
+    //TODO: BRK instruction
 
     // Status Flag Changes
     // System Functions
