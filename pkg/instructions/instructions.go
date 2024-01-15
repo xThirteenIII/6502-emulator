@@ -117,6 +117,7 @@ const (
 
     // Branches
     INS_BEQ_REL = 0xF0
+    INS_BNE_REL = 0xD0
 
     // Status Flag Changes
     // System Functions
