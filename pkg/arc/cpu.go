@@ -1266,8 +1266,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_BEQ_REL:
 
-            signedOffset := cpu.FetchSignedByte(&cycles)
-            cpu.BranchIf(cpu.PS.Z, 1, signedOffset, &cycles)
+            cpu.BranchIf(cpu.PS.Z, 1, &cycles)
 
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
@@ -1276,8 +1275,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_BNE_REL:
 
-            signedOffset := cpu.FetchSignedByte(&cycles)
-            cpu.BranchIf(cpu.PS.Z, 0, signedOffset, &cycles)
+            cpu.BranchIf(cpu.PS.Z, 0, &cycles)
 
             // Total cycles: 2(+1 if branch succeeds, +2 if to a new page)
             // Total bytes: 2
@@ -1463,7 +1461,9 @@ func (cpu *CPU) SPTo16Address(sp byte) (SP uint16){
 }
 
 // TODO: handle value and condition as bool maybe? That would mean change the PS structure
-func (cpu *CPU) BranchIf(value , condition uint, offset int8, cycles *int){
+func (cpu *CPU) BranchIf(value , condition uint, cycles *int){
+
+            signedOffset := cpu.FetchSignedByte(cycles)
 
             // If value meets the condition, jump to another space in memory
             if value == condition{
@@ -1480,7 +1480,7 @@ func (cpu *CPU) BranchIf(value , condition uint, offset int8, cycles *int){
                 // a page crossing. +1 cycles
                 originalHi := cpu.PC >> 8
 
-                cpu.PC = uint16(int16(offset) + int16(cpu.PC))
+                cpu.PC = uint16(int16(signedOffset) + int16(cpu.PC))
 
                 // If to a new page, takes one cycle
                 if originalHi != cpu.PC >> 8 {
