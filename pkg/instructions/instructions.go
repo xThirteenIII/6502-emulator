@@ -125,7 +125,6 @@ const (
     INS_BVC_REL = 0x50
     INS_BVS_REL = 0x70
 
-    //TODO: BRK instruction
 
     // Status Flag Changes
     INS_CLC_IMP = 0x18
@@ -137,5 +136,10 @@ const (
     INS_SEI_IMP = 0x78
     
     // System Functions
+    // TODO:
+    INS_BRK_IMP = 0x00
+    INS_NOP_IMP = 0xEA
+    // TODO:
+    INS_RTI_IMP = 0x40
 
 )

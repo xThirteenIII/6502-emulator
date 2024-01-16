@@ -37,14 +37,14 @@ func (mem *Memory) Initialise(){
     }
 }
 type ProcessorStatus struct {
-    C uint
-    Z uint
-    I uint
-    D uint
-    B uint
-    U uint  // This bit is reserved for future use and should always be set to 1 when writing to the PSR.
-    V uint
-    N uint
+    C uint // Carry flag
+    Z uint // Zero flag
+    I uint // Interrupt Disable flag
+    D uint // Decimal mode flag
+    B uint // Break command flag
+    U uint // This bit is reserved for future use and should always be set to 1 when writing to the PSR.
+    V uint // Overflow flag
+    N uint // Negative flag
 }
 
 type CPU struct {
@@ -1403,6 +1403,14 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 2
             // Total bytes: 1
             break; 
+
+        case instructions.INS_NOP_IMP:
+
+            cpu.PC++
+            cycles--
+            // Total cycles: 2
+            // Total bytes: 1
+            break;
 
         default:
             log.Println("At memory address: ", cpu.PC)
