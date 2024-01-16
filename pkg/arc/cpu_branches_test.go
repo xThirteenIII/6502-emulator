@@ -985,3 +985,133 @@ func TestBVSSubtractsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
         t.Error("PC should be 0xFE94 instead got: ", cpu.PC)
     }
 }
+
+func TestBVCSumsCorrectlyToProgramCounter(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0x1001)
+    cpu.PS.V = 0
+
+    cpu.Memory.Data[0x1001] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0x1002] = 0x33
+
+    // No Page crossing happens so it takes 3 cycles
+    expectedCycles := 3
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0x1036 {
+        t.Error("PC should be 0x1036 instead got: ", cpu.PC)
+    }
+}
+
+func TestBVCDoesNotModifyPCIfCarryFlagIsSet(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0x1001)
+    cpu.PS.V = 1
+
+    cpu.Memory.Data[0x1001] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0x1002] = 0x33
+
+    expectedCycles := 2
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0x1003 {
+        t.Error("PC should be 0x1003 instead got: ", cpu.PC)
+    }
+}
+
+func TestBVCSumsCorrectlyZeroToProgramCounter(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0x1001)
+    cpu.PS.V = 0
+
+    cpu.Memory.Data[0x1001] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0x1002] = 0x00
+
+    // No Page crossing happens so it takes 3 cycles
+    expectedCycles := 3
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0x1003 {
+        t.Error("PC should be 0x1003 instead got: ", cpu.PC)
+    }
+}
+
+func TestBVCSumsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0xFEFD)
+    cpu.PS.V = 0
+
+
+    cpu.Memory.Data[0xFEFD] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0xFEFE] = 0x33
+
+    // Page crossing happens so it takes 4 cycles
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    // Since at this point PC is 0xFEFF, 0xFEFF+0x33 = 0xFF32 with wrap around
+    if cpu.PC != 0xFF32 {
+        t.Error("PC should be 0xFF32 instead got: ", cpu.PC)
+    }
+}
+
+func TestBVCSubtractsCorrectlyToProgramCounterWithoutPageCrossing(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.PS.V = 0
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0xFFFD] = common.Int8ToByte(-122)
+
+    expectedCycles := 3
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0xFF84 {
+        t.Error("PC should be 0xFF84 instead got: ", cpu.PC)
+    }
+}
+
+func TestBVCSubtractsCorrectlyToProgramCounterWithPageCrossing(t *testing.T){
+    
+    cpu := Init6502()
+    cpu.Reset(0xFF0C)
+    cpu.PS.V = 0
+
+    cpu.Memory.Data[0xFF0C] = instructions.INS_BVC_REL
+    cpu.Memory.Data[0xFF0D] = common.Int8ToByte(-122)
+
+    expectedCycles := 4
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed {
+        t.Error("Expected cycles: ", expectedCycles, "but got: ", cyclesUsed)
+    }
+
+    if cpu.PC != 0xFE94 {
+        t.Error("PC should be 0xFE94 instead got: ", cpu.PC)
+    }
+}
