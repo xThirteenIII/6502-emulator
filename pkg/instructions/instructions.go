@@ -128,6 +128,14 @@ const (
     //TODO: BRK instruction
 
     // Status Flag Changes
+    INS_CLC_IMP = 0x18
+    INS_CLD_IMP = 0xD8
+    INS_CLI_IMP = 0x58
+    INS_CLV_IMP = 0xB8
+    INS_SEC_IMP = 0x38
+    INS_SED_IMP = 0xF8
+    INS_SEI_IMP = 0x78
+    
     // System Functions
 
 )

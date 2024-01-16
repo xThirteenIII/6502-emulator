@@ -1339,7 +1339,70 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 2
             break;
 
-        //TODO: BRK instruction
+            //TODO: BRK instruction
+
+        case instructions.INS_CLC_IMP:
+
+            cpu.PS.C = cleared
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+
+        case instructions.INS_CLD_IMP:
+
+            cpu.PS.D = cleared
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+
+        case instructions.INS_CLI_IMP:
+
+            cpu.PS.I = cleared
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+
+        case instructions.INS_CLV_IMP:
+
+            cpu.PS.V = cleared
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+
+        case instructions.INS_SEC_IMP:
+
+            cpu.PS.C = set
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+
+        case instructions.INS_SED_IMP:
+
+            cpu.PS.D = set
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
+                
+        case instructions.INS_SEI_IMP:
+
+            cpu.PS.I = set
+            cycles--
+
+            // Total cycles: 2
+            // Total bytes: 1
+            break; 
 
         default:
             log.Println("At memory address: ", cpu.PC)
@@ -1362,18 +1425,18 @@ func SetZeroAndNegativeFlags(cpu *CPU, register byte) {
 
             // Set Z flag if A is 0
             if register == 0 {
-                cpu.PS.Z = 1
+                cpu.PS.Z = set
             }else{
-                cpu.PS.Z = 0
+                cpu.PS.Z = cleared
             }
 
             // Set N flag if the bit 7 of A is set
             // byte(1 << 7) is a bitmask that has the 7 bit set to 1
             // it left-shifts the 00000001 seven positions left
             if (register & byte(1 << 7) != 0) {
-                cpu.PS.N = 1
+                cpu.PS.N = set
             }else {
-                cpu.PS.N = 0
+                cpu.PS.N = cleared
             }
 }
 
