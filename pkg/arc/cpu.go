@@ -1412,6 +1412,47 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 1
             break;
 
+        case instructions.INS_ADC_IM:
+
+            // Total cycles: 2
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_ADC_ZP:
+
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_ZPX:
+
+            // Total cycles: 4
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_ABS:
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_ABSX:
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_ABSY:
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_INDX:
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_INDY:
+
+            // Total cycles: 5(+1 if page crossed)
+            // Total bytes: 2
+            break;
         default:
             log.Println("At memory address: ", cpu.PC)
 
