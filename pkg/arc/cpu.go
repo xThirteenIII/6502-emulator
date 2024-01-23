@@ -1414,6 +1414,35 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_ADC_IM:
 
+            memValue := cpu.FetchByte(&cycles)
+
+            signA := cpu.A >> 7
+            signValue := memValue >> 7
+            carryFlag := cpu.PS.C
+
+            // TODO: is it correct to say carry bit is set when result exceeds 0xFF?
+            // The carry flag is set if the last operation caused an overflow from bit 7 of the result or an underflow from bit 0. 
+            if uint16(cpu.A) + uint16(memValue) + uint16(byte(cpu.PS.C)) > 0xFF || 
+               uint16(cpu.A) + uint16(memValue) + uint16(byte(cpu.PS.C)) < 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            cpu.A = cpu.A + memValue + byte(carryFlag)
+
+            signAfterAddition := cpu.A >> 7
+
+            // If there's overflow, set the overflow flag
+            // TODO: what happens to the overflowed value?
+            if (signA == signValue) && (signAfterAddition != signA) {
+                cpu.PS.V = set
+            }else {
+                cpu.PS.V = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
             // Total cycles: 2
             // Total bytes: 2
             break;
