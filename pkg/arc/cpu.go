@@ -1422,8 +1422,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
             // TODO: is it correct to say carry bit is set when result exceeds 0xFF?
             // The carry flag is set if the last operation caused an overflow from bit 7 of the result or an underflow from bit 0. 
-            if uint16(cpu.A) + uint16(memValue) + uint16(byte(cpu.PS.C)) > 0xFF || 
-               uint16(cpu.A) + uint16(memValue) + uint16(byte(cpu.PS.C)) < 0 {
+            if uint16(cpu.A) + uint16(memValue) + uint16(cpu.PS.C) > 0xFF || 
+               uint16(cpu.A) + uint16(memValue) + uint16(cpu.PS.C) < 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
