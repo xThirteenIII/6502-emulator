@@ -19,6 +19,10 @@ import (
 
 const MaxMem = 1024 * 64
 
+type flags interface{
+    testIfSet()
+}
+
 type Memory struct {
 
    Data [MaxMem]byte
