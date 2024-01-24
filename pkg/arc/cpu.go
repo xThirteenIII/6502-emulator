@@ -81,6 +81,9 @@ type CPU struct {
     Memory Memory
 }
 
+// TODO: How ugly is this?
+var getFlagName = make(map[*uint]string)
+
 func (cpu *CPU) Reset(resetVector uint16){
 
     // Reset procedure does not follow accurate Commodor 64, it acts like a computer that's like a 
@@ -98,6 +101,16 @@ func (cpu *CPU) Reset(resetVector uint16){
     cpu.PS.U = 0
     cpu.PS.V = 0
     cpu.PS.N = 0
+
+    // TODO: pretty sure this shouldn't be done here
+    getFlagName[&cpu.PS.C] = "Carry flag"
+    getFlagName[&cpu.PS.Z] = "Zero flag"
+    getFlagName[&cpu.PS.I] = "Interrupt disable flag"
+    getFlagName[&cpu.PS.D] = "Decimal flag"
+    getFlagName[&cpu.PS.B] = "Break command flag"
+    getFlagName[&cpu.PS.U] = "Unused flag"
+    getFlagName[&cpu.PS.V] = "Overflow flag"
+    getFlagName[&cpu.PS.N] = "Negative flag"
 
     // After the Reset, there's 9 post-reset cycles, which execute three fake push into the stack.
     // The final SP is therefore 00 - 1 = FF, FF - 1 = FE, FF - 1 = FD

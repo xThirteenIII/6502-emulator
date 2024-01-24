@@ -224,3 +224,21 @@ func TestByteToProcessorStatus(t *testing.T){
     }
 
 }
+
+func CheckIfFollowingFlagsAreSet(t *testing.T , flagsExpectedToBeSet ...*uint){
+    for _ , flag := range flagsExpectedToBeSet{
+
+        if *flag != set {
+            t.Error(getFlagName[flag], "shuold be set instead got", *flag)
+        }
+    }
+}
+
+func CheckIfFollowingFlagsAreCleared(t *testing.T , flagsExpectedToBeCleared ...*uint){
+    for _ , flag := range flagsExpectedToBeCleared{
+
+        if *flag != cleared {
+            t.Error(getFlagName[flag], "shuold be cleared instead got", *flag)
+        }
+    }
+}

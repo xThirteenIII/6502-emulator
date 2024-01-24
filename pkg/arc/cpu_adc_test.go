@@ -11,21 +11,8 @@ func TestADCIMAddsCorrectlyZeroToZero(t *testing.T){
 
     CheckADCIMExecute(cpu, 0x00, 0x00, 0x00, 2, t)
 
-    if cpu.PS.C != 0 {
-        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
-    }
-
-    if cpu.PS.V != 0 {
-        t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
-    }
-
-    if cpu.PS.Z != 1 {
-        t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
-    }
-
-    if cpu.PS.N != 0 {
-        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
-    }
+    CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
+    CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
 }
 
 func TestADCIMAddsCorrectlyWithNoCarryNorOverflow(t *testing.T){
