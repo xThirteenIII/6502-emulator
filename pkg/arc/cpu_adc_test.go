@@ -338,6 +338,171 @@ func TestADCABSAddsCorrectlyWithNoCarryAndOverflow(t *testing.T){
     }
 }
 
+func TestADCABSXAddsCorrectlyZeroToZero(t *testing.T){
+
+    cpu := Init6502()
+
+    CheckADCABSXExecute(cpu, 0x00, 0x00, 0x00, 4, t)
+
+    CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
+    CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
+}
+
+func TestADCABSXAddsCorrectlyWithNoCarryNorOverflow(t *testing.T){
+
+    cpu := Init6502()
+
+    CheckADCABSXExecute(cpu, 0x05, 0xF0, 0xF5, 4, t)
+
+    if cpu.PS.C != 0 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
+        t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCABSXAddsCorrectlyWithCarryAndNoOverflow(t *testing.T){
+
+    cpu := Init6502()
+    CheckADCABSXExecute(cpu, 0x05, 0xFB, 0x00, 4, t)
+
+    // Then
+    if cpu.A != 0x00 {
+        t.Error("Accumulator should be 0x00 but got: ", cpu.A)
+    }
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 1 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
+        t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 1 {
+        t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCABSXAddsCorrectlyWithNoCarryAndOverflow(t *testing.T){
+
+    // Given
+    cpu := Init6502()
+    CheckADCABSXExecute(cpu, 0x7F, 0x01, 0x80, 4, t)
+
+    if cpu.PS.C != 0 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+func TestADCABSYAddsCorrectlyZeroToZero(t *testing.T){
+
+    cpu := Init6502()
+
+    CheckADCABSYExecute(cpu, 0x00, 0x00, 0x00, 4, t)
+
+    CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
+    CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
+}
+
+func TestADCABSYAddsCorrectlyWithNoCarryNorOverflow(t *testing.T){
+
+    cpu := Init6502()
+
+    CheckADCABSYExecute(cpu, 0x05, 0xF0, 0xF5, 4, t)
+
+    if cpu.PS.C != 0 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
+        t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCABSYAddsCorrectlyWithCarryAndNoOverflow(t *testing.T){
+
+    cpu := Init6502()
+    CheckADCABSYExecute(cpu, 0x05, 0xFB, 0x00, 4, t)
+
+    // Then
+    if cpu.A != 0x00 {
+        t.Error("Accumulator should be 0x00 but got: ", cpu.A)
+    }
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 1 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
+        t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 1 {
+        t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCABSYAddsCorrectlyWithNoCarryAndOverflow(t *testing.T){
+
+    // Given
+    cpu := Init6502()
+    CheckADCABSYExecute(cpu, 0x7F, 0x01, 0x80, 4, t)
+
+    if cpu.PS.C != 0 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
 // expectedResult: the value the accumulator should have after add operations,
 // memValue: the value in the memory cell that is added to the accumulator,
 // accumulator: initial value of the register,
