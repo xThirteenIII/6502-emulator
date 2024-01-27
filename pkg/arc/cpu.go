@@ -1432,6 +1432,110 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_ADC_IM:
 
             memValue := cpu.FetchByte(&cycles)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 2
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_ADC_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_ABSX:
+
+            targetAddress := cpu.AddressAbsoluteX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_ABSY:
+
+            targetAddress := cpu.AddressAbsoluteY(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_ADC_INDX:
+
+            targetAddress := cpu.AddressIndirectX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+        case instructions.INS_ADC_INDY:
+
+            targetAddress := cpu.AddressIndirectY(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            AddWithCarryAndSetSignOverflow(cpu, memValue)
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 5(+1 if page crossed)
+            // Total bytes: 2
+            break;
+        default:
+            log.Println("At memory address: ", cpu.PC)
+
+            // TODO: Should it stop and Fatal or just keep going till next valid instruction?
+            log.Fatalln("Unknown opcode: ", ins)
+        }
+    }
+
+    // If the number of cycles used is correct, respectively to the instruction used, 
+    // the return should be the original value, passed when calling Execute().
+    // When testing the instruction, we make sure that the expected value returned by Execute()
+    // matches the cycles needed for the instructions, based on official documentation.
+    cyclesUsed -= cycles
+
+    return
+}
+
+// this takes 1 clock cycle
+func AddWithCarryAndSetSignOverflow(cpu *CPU, memValue byte){
 
             signA := cpu.A >> 7
             signValue := memValue >> 7
@@ -1458,62 +1562,6 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
                 cpu.PS.V = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
-
-            // Total cycles: 2
-            // Total bytes: 2
-            break;
-
-        case instructions.INS_ADC_ZP:
-
-            // Total cycles: 3
-            // Total bytes: 2
-            break;
-        case instructions.INS_ADC_ZPX:
-
-            // Total cycles: 4
-            // Total bytes: 2
-            break;
-        case instructions.INS_ADC_ABS:
-
-            // Total cycles: 4
-            // Total bytes: 3
-            break;
-        case instructions.INS_ADC_ABSX:
-
-            // Total cycles: 4(+1 if page crossed)
-            // Total bytes: 3
-            break;
-        case instructions.INS_ADC_ABSY:
-
-            // Total cycles: 4(+1 if page crossed)
-            // Total bytes: 3
-            break;
-        case instructions.INS_ADC_INDX:
-
-            // Total cycles: 6
-            // Total bytes: 2
-            break;
-        case instructions.INS_ADC_INDY:
-
-            // Total cycles: 5(+1 if page crossed)
-            // Total bytes: 2
-            break;
-        default:
-            log.Println("At memory address: ", cpu.PC)
-
-            // TODO: Should it stop and Fatal or just keep going till next valid instruction?
-            log.Fatalln("Unknown opcode: ", ins)
-        }
-    }
-
-    // If the number of cycles used is correct, respectively to the instruction used, 
-    // the return should be the original value, passed when calling Execute().
-    // When testing the instruction, we make sure that the expected value returned by Execute()
-    // matches the cycles needed for the instructions, based on official documentation.
-    cyclesUsed -= cycles
-
-    return
 }
 
 func SetZeroAndNegativeFlags(cpu *CPU, register byte) {
