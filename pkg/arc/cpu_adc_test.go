@@ -1,6 +1,7 @@
 package arc
 
 import (
+	"emulator/pkg/common"
 	"emulator/pkg/instructions"
 	"testing"
 )
@@ -68,6 +69,7 @@ func TestADCIMAddsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 func TestADCIMAddsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 
     // Given
+    // 127+1 = 128
     cpu := Init6502()
     CheckADCIMExecute(cpu, 0x7F, 0x01, 0x80, 2, t)
 
@@ -76,6 +78,79 @@ func TestADCIMAddsCorrectlyWithNoCarryAndOverflow(t *testing.T){
     }
 
     if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCIMAddsCorrectlySignedWithCarryAndOverflow(t *testing.T){
+
+    // Given
+    // -128-1 = +127
+    cpu := Init6502()
+    CheckADCIMExecute(cpu, common.Int8ToByte(-128), common.Int8ToByte(-1), common.Int8ToByte(127), 2, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCIMAddsCorrectlySignedWithCarryAndOverflowWithPreviousCarryFlagSet(t *testing.T){
+
+    // Given
+    // -128-1+1 = +128
+    cpu := Init6502()
+    cpu.PS.C = 1
+    CheckADCIMExecute(cpu, common.Int8ToByte(-128), common.Int8ToByte(-1), 0x80, 2, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be 1 but got ", cpu.PS.N)
+    }
+}
+
+func TestADCIMAddsCorrectlySignedWithCarryAndNoOverflow(t *testing.T){
+
+    // Given
+    // -127-1 = -128
+    cpu := Init6502()
+    CheckADCIMExecute(cpu, common.Int8ToByte(-127), common.Int8ToByte(-1), 0x80, 2, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 0 {
         t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
     }
 
