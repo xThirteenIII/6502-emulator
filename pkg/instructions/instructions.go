@@ -102,6 +102,15 @@ const (
     INS_ADC_INDX = 0x61
     INS_ADC_INDY = 0x71
 
+    INS_CMP_IM = 0xC9
+    INS_CMP_ZP = 0xC5
+    INS_CMP_ZPX = 0xD5
+    INS_CMP_ABS = 0xCD
+    INS_CMP_ABSX = 0xDD
+    INS_CMP_ABSY = 0xD9
+    INS_CMP_INDX = 0xC1
+    INS_CMP_INDY = 0xD1
+
     // Increments & Decrements
     INS_INC_ZP = 0xE6
     INS_INC_ZPX = 0xF6
