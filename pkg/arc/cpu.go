@@ -1521,19 +1521,11 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             
         case instructions.INS_CMP_IM:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
-            memValue := cpu.FetchByte(&cycles)
+            // CMP instruction performs a comparison between A register and value held in memory, 
+            // by doint an unsigned subtracting the value from the Accumulator
+            // It then sets proper flags
             
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.FetchByte(&cycles))
 
             // Total cycles: 2
             // Total bytes: 2
@@ -1541,41 +1533,17 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_ZP:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             zeroPageAddress := cpu.AddressZeroPage(&cycles)
-            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
             
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, zeroPageAddress))
 
             // Total cycles: 3
             // Total bytes: 2
             break;
         case instructions.INS_CMP_ZPX:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             zeroPageAddress := cpu.AddressZeroPageX(&cycles)
-            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
-
-            
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, zeroPageAddress))
 
             // Total cycles: 4
             // Total bytes: 2
@@ -1583,21 +1551,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_ABS:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             zeroPageAddress := cpu.AddressAbsolute(&cycles)
-            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
-
-            
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, zeroPageAddress))
 
             // Total cycles: 4
             // Total bytes: 3
@@ -1605,20 +1560,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_ABSX:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             targetAddress := cpu.AddressAbsoluteX(&cycles)
-            memValue := cpu.ReadByte(&cycles, targetAddress)
-
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, targetAddress))
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -1626,20 +1569,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_ABSY:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
-            zeroPageAddress := cpu.AddressAbsoluteY(&cycles)
-            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
-
-            
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-            SetZeroAndNegativeFlags(cpu, temp)
+            targetAddress := cpu.AddressAbsoluteY(&cycles)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, targetAddress))
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -1647,21 +1578,8 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_INDX:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             targetAddress := cpu.AddressIndirectX(&cycles)
-            memValue := cpu.ReadByte(&cycles, targetAddress)
-
-            
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, targetAddress))
 
             // Total cycles: 6
             // Total bytes: 2
@@ -1669,24 +1587,63 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMP_INDY:
 
-            // CMP instruction performs an unsigned subtractions between
-            // accumulator and the memory value held
             targetAddress := cpu.AddressIndirectY(&cycles)
-            memValue := cpu.ReadByte(&cycles, targetAddress)
-
+            compareRegisterWithValueAndSetFlags(cpu, cpu.A, cpu.ReadByte(&cycles, targetAddress))
             
-            temp := cpu.A - memValue
-
-            if temp >= 0 {
-                cpu.PS.C = set
-            }else{
-                cpu.PS.C = cleared
-            }
-
-            SetZeroAndNegativeFlags(cpu, temp)
-
             // Total cycles: 5(+1 if page crossed)
             // Total bytes: 2
+            break;
+
+        case instructions.INS_CMX_IM:
+
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.FetchByte(&cycles))
+
+            // Total cycles: 2
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_CMX_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, zeroPageAddress))
+            
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_CMX_ABS:
+
+            zeroPageAddress := cpu.AddressAbsolute(&cycles)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, zeroPageAddress))
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_CMY_IM:
+
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.FetchByte(&cycles))
+
+            // Total cycles: 2
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_CMY_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, zeroPageAddress))
+            
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_CMY_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, targetAddress))
+
+            // Total cycles: 4
+            // Total bytes: 3
             break;
 
         default:
@@ -1973,4 +1930,20 @@ func (cpu *CPU) LoadProgram(program []byte){
             loadAddress++
         }
     }
+}
+
+// Subtracts a value passed as 'memValue' from the value held by 'register'
+// And sets carry, zero and negative flags based on result
+// Carry flag if result is equal or greater than 0
+// Zero flag if result is 0
+// Negative flag is result has the 7 bit set
+func compareRegisterWithValueAndSetFlags(cpu *CPU, register, memValue uint8){
+
+            if register - memValue >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, register - memValue)
 }
