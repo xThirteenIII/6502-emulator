@@ -1622,7 +1622,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
 
         case instructions.INS_CMY_IM:
 
-            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.FetchByte(&cycles))
+            compareRegisterWithValueAndSetFlags(cpu, cpu.Y, cpu.FetchByte(&cycles))
 
             // Total cycles: 2
             // Total bytes: 2
@@ -1631,7 +1631,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_CMY_ZP:
 
             zeroPageAddress := cpu.AddressZeroPage(&cycles)
-            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, zeroPageAddress))
+            compareRegisterWithValueAndSetFlags(cpu, cpu.Y, cpu.ReadByte(&cycles, zeroPageAddress))
             
             // Total cycles: 3
             // Total bytes: 2
@@ -1640,7 +1640,7 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
         case instructions.INS_CMY_ABS:
 
             targetAddress := cpu.AddressAbsolute(&cycles)
-            compareRegisterWithValueAndSetFlags(cpu, cpu.X, cpu.ReadByte(&cycles, targetAddress))
+            compareRegisterWithValueAndSetFlags(cpu, cpu.Y, cpu.ReadByte(&cycles, targetAddress))
 
             // Total cycles: 4
             // Total bytes: 3
