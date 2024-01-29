@@ -22,8 +22,8 @@ func TestCMPIMSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -56,8 +56,8 @@ func TestCMPIMSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -90,8 +90,8 @@ func TestCMPIMSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -125,8 +125,8 @@ func TestCMPZPSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -160,8 +160,8 @@ func TestCMPZPSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -195,8 +195,8 @@ func TestCMPZPSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -231,8 +231,8 @@ func TestCMPZPXSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -267,8 +267,8 @@ func TestCMPZPXSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -303,8 +303,8 @@ func TestCMPZPXSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -339,8 +339,8 @@ func TestCMPABSSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -375,8 +375,8 @@ func TestCMPABSSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -411,8 +411,8 @@ func TestCMPABSSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -448,8 +448,8 @@ func TestCMPABSXSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 0x10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 0x30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -485,8 +485,8 @@ func TestCMPABSXSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -522,8 +522,8 @@ func TestCMPABSXSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -559,8 +559,8 @@ func TestCMPABSYSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 0x10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 0x30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -596,8 +596,8 @@ func TestCMPABSYSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -633,8 +633,8 @@ func TestCMPABSYSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -671,8 +671,8 @@ func TestCMPINDXSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 0x10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 0x30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -709,8 +709,8 @@ func TestCMPINDXSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -747,8 +747,8 @@ func TestCMPINDXSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -785,8 +785,8 @@ func TestCMPINDYSetsCarryFlagCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x10 {
-        t.Error("Accumulator should be 0x10 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 0x30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -823,8 +823,8 @@ func TestCMPINDYSetsCarryAndZeroFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0 but got", cpu.A)
+    if cpu.A != 0x30 {
+        t.Error("Accumulator should be 30 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {
@@ -861,8 +861,8 @@ func TestCMPINDYSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
     }
 
-    if cpu.A != 0xEF {
-        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    if cpu.A != 0xF0 {
+        t.Error("Accumulator should be 0xF0 but got", cpu.A)
     }
 
     if cpu.PS.C != 1 {

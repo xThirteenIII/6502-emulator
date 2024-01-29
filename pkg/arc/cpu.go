@@ -1525,15 +1525,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // accumulator and the memory value held
             memValue := cpu.FetchByte(&cycles)
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 2
             // Total bytes: 2
@@ -1546,15 +1546,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             zeroPageAddress := cpu.AddressZeroPage(&cycles)
             memValue := cpu.ReadByte(&cycles, zeroPageAddress)
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 3
             // Total bytes: 2
@@ -1567,15 +1567,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             memValue := cpu.ReadByte(&cycles, zeroPageAddress)
 
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 4
             // Total bytes: 2
@@ -1589,15 +1589,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             memValue := cpu.ReadByte(&cycles, zeroPageAddress)
 
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 4
             // Total bytes: 3
@@ -1610,16 +1610,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             targetAddress := cpu.AddressAbsoluteX(&cycles)
             memValue := cpu.ReadByte(&cycles, targetAddress)
 
-            
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -1633,15 +1632,14 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             memValue := cpu.ReadByte(&cycles, zeroPageAddress)
 
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
-
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 4(+1 if page crossed)
             // Total bytes: 3
@@ -1655,15 +1653,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             memValue := cpu.ReadByte(&cycles, targetAddress)
 
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 6
             // Total bytes: 2
@@ -1677,15 +1675,15 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             memValue := cpu.ReadByte(&cycles, targetAddress)
 
             
-            cpu.A -= memValue
+            temp := cpu.A - memValue
 
-            if cpu.A >= 0 {
+            if temp >= 0 {
                 cpu.PS.C = set
             }else{
                 cpu.PS.C = cleared
             }
 
-            SetZeroAndNegativeFlags(cpu, cpu.A)
+            SetZeroAndNegativeFlags(cpu, temp)
 
             // Total cycles: 5(+1 if page crossed)
             // Total bytes: 2
