@@ -649,3 +649,117 @@ func TestCMPABSYSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
         t.Error("Negative flag should be set")
     }
 }
+
+func TestCMPINDXSetsCarryFlagCorrectly(t *testing.T){
+
+    cpu := Init6502()
+    cpu.A = 0x30
+    cpu.X = 0x04
+    cpu.PS.C = 0
+    cpu.PS.Z = 1
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_CMP_INDX
+    cpu.Memory.Data[0xFFFD] = 0x4F
+    cpu.Memory.Data[0x0053] = 0x60
+    cpu.Memory.Data[0x0054] = 0x60
+    cpu.Memory.Data[0x6060] = 0x20
+
+    expectedCycles := 6
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    if cpu.A != 0x10 {
+        t.Error("Accumulator should be 0x10 but got", cpu.A)
+    }
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry flag should be set")
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be clear")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be clear")
+    }
+}
+
+func TestCMPINDXSetsCarryAndZeroFlagsCorrectly(t *testing.T){
+
+    cpu := Init6502()
+    cpu.A = 0x30
+    cpu.X = 0x05
+    cpu.PS.C = 0
+    cpu.PS.Z = 0
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_CMP_INDX
+    cpu.Memory.Data[0xFFFD] = 0x50
+    cpu.Memory.Data[0x0055] = 0x50
+    cpu.Memory.Data[0x0056] = 0x30
+    cpu.Memory.Data[0x3050] = 0x30
+
+    expectedCycles := 6
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    if cpu.A != 0x00 {
+        t.Error("Accumulator should be 0 but got", cpu.A)
+    }
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry flag should be set")
+    }
+
+    if cpu.PS.Z != 1 {
+        t.Error("Zero flag should be set")
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be clear")
+    }
+}
+
+func TestCMPINDXSetsCarryAndNegativeFlagsCorrectly(t *testing.T){
+
+    cpu := Init6502()
+    cpu.A = 0xF0
+    cpu.X = 0x05
+    cpu.PS.C = 0
+    cpu.PS.Z = 0
+
+    cpu.Memory.Data[0xFFFC] = instructions.INS_CMP_INDX
+    cpu.Memory.Data[0xFFFD] = 0x50
+    cpu.Memory.Data[0x0055] = 0x50
+    cpu.Memory.Data[0x0056] = 0x61
+    cpu.Memory.Data[0x6150] = 0x01
+
+    expectedCycles := 6
+    cyclesUsed := cpu.Execute(expectedCycles)
+
+    if expectedCycles != cyclesUsed{
+        t.Error("Cycles used: ", cyclesUsed, ", instead expected: ", expectedCycles)
+    }
+
+    if cpu.A != 0xEF {
+        t.Error("Accumulator should be 0xEF but got", cpu.A)
+    }
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry flag should be set")
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be clear")
+    }
+
+    if cpu.PS.N != 1 {
+        t.Error("Negative flag should be set")
+    }
+}
