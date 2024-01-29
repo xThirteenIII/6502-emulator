@@ -1580,6 +1580,117 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total cycles: 4
             // Total bytes: 2
             break;
+
+        case instructions.INS_CMP_ABS:
+
+            // CMP instruction performs an unsigned subtractions between
+            // accumulator and the memory value held
+            zeroPageAddress := cpu.AddressAbsolute(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            
+            cpu.A -= memValue
+
+            if cpu.A >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_CMP_ABSX:
+
+            // CMP instruction performs an unsigned subtractions between
+            // accumulator and the memory value held
+            targetAddress := cpu.AddressAbsoluteX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            
+            cpu.A -= memValue
+
+            if cpu.A >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_CMP_ABSY:
+
+            // CMP instruction performs an unsigned subtractions between
+            // accumulator and the memory value held
+            zeroPageAddress := cpu.AddressAbsoluteY(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+
+            
+            cpu.A -= memValue
+
+            if cpu.A >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+
+        case instructions.INS_CMP_INDX:
+
+            // CMP instruction performs an unsigned subtractions between
+            // accumulator and the memory value held
+            targetAddress := cpu.AddressIndirectX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            
+            cpu.A -= memValue
+
+            if cpu.A >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_CMP_INDY:
+
+            // CMP instruction performs an unsigned subtractions between
+            // accumulator and the memory value held
+            targetAddress := cpu.AddressIndirectY(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+
+            
+            cpu.A -= memValue
+
+            if cpu.A >= 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 5(+1 if page crossed)
+            // Total bytes: 2
+            break;
+
         default:
             log.Println("At memory address: ", cpu.PC)
 
