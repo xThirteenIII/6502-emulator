@@ -242,3 +242,10 @@ func CheckIfFollowingFlagsAreCleared(t *testing.T , flagsExpectedToBeCleared ...
         }
     }
 }
+
+// TODO: find a way to output the test instruction that failed and the number of cycles expected
+//       when the execution takes less cycles than expected.
+//       As for now the only error output is:
+//          2024/01/29 11:38:06 At memory address:  65535
+//          2024/01/29 11:38:06 Unknown opcode:  0
+//          exit status 1
