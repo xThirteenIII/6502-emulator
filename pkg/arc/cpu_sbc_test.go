@@ -231,14 +231,12 @@ func TestSBCZPSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
     }
 }
 
-/*
-
-
 func TestSBCZPXSubtractsCorrectlyZeroToZero(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
-    CheckSBCZPXExecute(cpu, 0x00, 0x00, 0x00, 4, t)
+    CheckSBCZPXExecute(cpu, 0x00, 0x00, 0x00, t)
 
     CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
     CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
@@ -247,8 +245,9 @@ func TestSBCZPXSubtractsCorrectlyZeroToZero(t *testing.T){
 func TestSBCZPXSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
-    CheckSBCZPXExecute(cpu, 0x05, 0xF0, 0xF5, 4, t)
+    CheckSBCZPXExecute(cpu, 0x02, common.Int8ToByte(114), common.Int8ToByte(-112), t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -270,12 +269,9 @@ func TestSBCZPXSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 func TestSBCZPXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 
     cpu := Init6502()
-    CheckSBCZPXExecute(cpu, 0x05, 0xFB, 0x00, 4, t)
+    cpu.PS.C = 1
 
-    // Then
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0x00 but got: ", cpu.A)
-    }
+    CheckSBCZPXExecute(cpu, 0x02, 0x01, 0x01, t)
 
     if cpu.PS.C != 1 {
         t.Error("Carry bit should be 1 but got ", cpu.PS.C)
@@ -285,7 +281,7 @@ func TestSBCZPXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
         t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
     }
 
-    if cpu.PS.Z != 1 {
+    if cpu.PS.Z != 0 {
         t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
     }
 
@@ -297,8 +293,13 @@ func TestSBCZPXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 func TestSBCZPXSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 
     // Given
+    // 127+1 = 128
     cpu := Init6502()
-    CheckSBCZPXExecute(cpu, 0x7F, 0x01, 0x80, 4, t)
+    cpu.PS.C = 1
+
+    // 0x7F - (-1) - (1 - 1) = 0x80
+    // 0x7F - (-1) - (1 - 0) = 0x7F
+    CheckSBCZPXExecute(cpu, 0x7F, common.Int8ToByte(-1), 0x80, t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -316,6 +317,33 @@ func TestSBCZPXSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
         t.Error("Negative flag should be 1 but got ", cpu.PS.N)
     }
 }
+
+func TestSBCZPXSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
+
+    // Given
+    // -128-1-1 = +126
+    cpu := Init6502()
+    cpu.PS.C = 0
+    CheckSBCZPXExecute(cpu, common.Int8ToByte(-128), 0x01, 0x7E, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
+    }
+}
+
+/*
 
 func TestSBCABSSubtractsCorrectlyZeroToZero(t *testing.T){
 
