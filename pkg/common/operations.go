@@ -10,3 +10,13 @@ func Int8ToByte(signed int8) (b byte){
     
     return
 }
+
+func Int8AdditiveInverse(absoluteValue int8) byte{
+
+    if absoluteValue != 0 {
+        return (Int8ToByte(absoluteValue) ^ byte(0xFF)) + 1
+    }
+
+    return 0
+}
+    

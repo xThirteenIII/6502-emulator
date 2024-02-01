@@ -39,3 +39,36 @@ func TestInt8ToByteWorksCorrectlyWithZero(t *testing.T){
     }
 
 }
+
+func TestInt8AdditiveInverseWorksCorrectlyWithZero(t *testing.T){
+
+    intToConvert := int8(0)
+
+    convertedByte := Int8AdditiveInverse(intToConvert)
+
+    if convertedByte != 0{
+        t.Error("Inverse byte of: ", intToConvert, " should be 0 instead got: ", convertedByte)
+    }
+}
+
+func TestInt8AdditiveInverseWorksCorrectlyWithPositiveNumber(t *testing.T){
+
+    intToConvert := int8(127)
+
+    convertedByte := Int8AdditiveInverse(intToConvert)
+
+    if convertedByte != 0x81{
+        t.Error("Inverse byte of: ", intToConvert, " should be 0x81(-127) instead got: ", convertedByte)
+    }
+}
+
+func TestInt8AdditiveInverseWorksCorrectlyWithNegativeNumber(t *testing.T){
+
+    intToConvert := int8(-127)
+
+    convertedByte := Int8AdditiveInverse(intToConvert)
+
+    if convertedByte != 0x7F{
+        t.Error("Inverse byte of: ", intToConvert, " should be 0x7F(127) instead got: ", convertedByte)
+    }
+}

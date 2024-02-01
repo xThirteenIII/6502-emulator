@@ -1,6 +1,7 @@
 package arc
 
 import (
+	"emulator/pkg/common"
 	"emulator/pkg/instructions"
 	"fmt"
 	"log"
@@ -1646,6 +1647,101 @@ func (cpu *CPU) Execute( cycles int ) ( cyclesUsed int) {
             // Total bytes: 3
             break;
 
+        case instructions.INS_SBC_IM:
+
+            // The operation is unsigned but use signed to invert the number.
+            // This means a value with the 7th bit set is treated as signed
+            // to ease subtract operation.
+            // E.g. : 0x80 = -128 = 1000 0000
+            // So that A - (-128) = A + 128
+            memValue := cpu.FetchSignedByte(&cycles)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(memValue))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 2
+            // Total bytes: 2
+            break;
+
+        case instructions.INS_SBC_ZP:
+
+            zeroPageAddress := cpu.AddressZeroPage(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 3
+            // Total bytes: 2
+            break;
+        case instructions.INS_SBC_ZPX:
+
+            zeroPageAddress := cpu.AddressZeroPageX(&cycles)
+            memValue := cpu.ReadByte(&cycles, zeroPageAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4
+            // Total bytes: 2
+            break;
+        case instructions.INS_SBC_ABS:
+
+            targetAddress := cpu.AddressAbsolute(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4
+            // Total bytes: 3
+            break;
+        case instructions.INS_SBC_ABSX:
+
+            targetAddress := cpu.AddressAbsoluteX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_SBC_ABSY:
+
+            targetAddress := cpu.AddressAbsoluteY(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 4(+1 if page crossed)
+            // Total bytes: 3
+            break;
+        case instructions.INS_SBC_INDX:
+
+            targetAddress := cpu.AddressIndirectX(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 6
+            // Total bytes: 2
+            break;
+        case instructions.INS_SBC_INDY:
+
+            targetAddress := cpu.AddressIndirectY(&cycles)
+            memValue := cpu.ReadByte(&cycles, targetAddress)
+            SubtractWithCarryAndSetSignOverflow(cpu, common.Int8AdditiveInverse(int8(memValue)))
+
+            SetZeroAndNegativeFlags(cpu, cpu.A)
+
+            // Total cycles: 5(+1 if page crossed)
+            // Total bytes: 2
+            break;
+
+
         default:
             log.Println("At memory address: ", cpu.PC)
 
@@ -1680,6 +1776,37 @@ func AddWithCarryAndSetSignOverflow(cpu *CPU, memValue byte){
             }
 
             cpu.A = cpu.A + memValue + byte(carryFlag)
+
+            signAfterAddition := cpu.A >> 7
+
+            // If there's overflow, set the overflow flag
+            // TODO: what happens to the overflowed value?
+            // Equals to say result must be in [-128, 127]?
+            // This should be enough even if i add 3 values
+            if (signA == signValue) && (signAfterAddition != signA) {
+                cpu.PS.V = set
+            }else {
+                cpu.PS.V = cleared
+            }
+}
+
+// this takes 1 clock cycle
+func SubtractWithCarryAndSetSignOverflow(cpu *CPU, memValue byte){
+
+            signA := cpu.A >> 7
+            signValue := memValue >> 7
+            carryFlag := cpu.PS.C
+
+            // TODO: is it correct to say carry bit is set when result exceeds 0xFF?
+            // The carry flag is set if the last operation caused an overflow from bit 7 of the result or an underflow from bit 0. 
+            if uint16(cpu.A) + uint16(memValue) + uint16(cpu.PS.C) > 0xFF || 
+               uint16(cpu.A) + uint16(memValue) + uint16(cpu.PS.C) < 0 {
+                cpu.PS.C = set
+            }else{
+                cpu.PS.C = cleared
+            }
+
+            cpu.A = cpu.A + memValue - (0x01-byte(carryFlag))
 
             signAfterAddition := cpu.A >> 7
 
@@ -1947,3 +2074,4 @@ func compareRegisterWithValueAndSetFlags(cpu *CPU, register, memValue uint8){
 
             SetZeroAndNegativeFlags(cpu, register - memValue)
 }
+
