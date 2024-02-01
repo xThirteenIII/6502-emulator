@@ -11,7 +11,7 @@ func TestSBCIMSubtractsCorrectlyZeroToZero(t *testing.T){
     cpu := Init6502()
     cpu.PS.C = 1
 
-    CheckSBCIMExecute(cpu, 0x00, 0x00, 0x00, 2, t)
+    CheckSBCIMExecute(cpu, 0x00, 0x00, 0x00, t)
 
     CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
     CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
@@ -22,7 +22,7 @@ func TestSBCIMSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
     cpu := Init6502()
     cpu.PS.C = 1
 
-    CheckSBCIMExecute(cpu, 0x02, common.Int8ToByte(114), common.Int8ToByte(-112), 2, t)
+    CheckSBCIMExecute(cpu, 0x02, common.Int8ToByte(114), common.Int8ToByte(-112), t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -46,7 +46,7 @@ func TestSBCIMSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
     cpu := Init6502()
     cpu.PS.C = 1
 
-    CheckSBCIMExecute(cpu, 0x02, 0x01, 0x01, 2, t)
+    CheckSBCIMExecute(cpu, 0x02, 0x01, 0x01, t)
 
     if cpu.PS.C != 1 {
         t.Error("Carry bit should be 1 but got ", cpu.PS.C)
@@ -74,7 +74,7 @@ func TestSBCIMSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 
     // 0x7F - (-1) - (1 - 1) = 0x80
     // 0x7F - (-1) - (1 - 0) = 0x7F
-    CheckSBCIMExecute(cpu, 0x7F, common.Int8ToByte(-1), 0x80, 2, t)
+    CheckSBCIMExecute(cpu, 0x7F, common.Int8ToByte(-1), 0x80, t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -99,7 +99,7 @@ func TestSBCIMSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
     // -128-1-1 = +126
     cpu := Init6502()
     cpu.PS.C = 0
-    CheckSBCIMExecute(cpu, common.Int8ToByte(-128), 0x01, 0x7E, 2, t)
+    CheckSBCIMExecute(cpu, common.Int8ToByte(-128), 0x01, 0x7E, t)
 
     if cpu.PS.C != 1 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -118,13 +118,13 @@ func TestSBCIMSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
     }
 }
 
-/*
 
 func TestSBCZPSubtractsCorrectlyZeroToZero(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
-    CheckSBCZPExecute(cpu, 0x00, 0x00, 0x00, 3, t)
+    CheckSBCZPExecute(cpu, 0x00, 0x00, 0x00, t)
 
     CheckIfFollowingFlagsAreSet(t, &cpu.PS.Z)
     CheckIfFollowingFlagsAreCleared(t, &cpu.PS.V, &cpu.PS.C, &cpu.PS.N)
@@ -133,8 +133,9 @@ func TestSBCZPSubtractsCorrectlyZeroToZero(t *testing.T){
 func TestSBCZPSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
-    CheckSBCZPExecute(cpu, 0x05, 0xF0, 0xF5, 3, t)
+    CheckSBCZPExecute(cpu, 0x02, common.Int8ToByte(114), common.Int8ToByte(-112), t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -156,12 +157,9 @@ func TestSBCZPSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 func TestSBCZPSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 
     cpu := Init6502()
-    CheckSBCZPExecute(cpu, 0x05, 0xFB, 0x00, 3, t)
+    cpu.PS.C = 1
 
-    // Then
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0x00 but got: ", cpu.A)
-    }
+    CheckSBCZPExecute(cpu, 0x02, 0x01, 0x01, t)
 
     if cpu.PS.C != 1 {
         t.Error("Carry bit should be 1 but got ", cpu.PS.C)
@@ -171,7 +169,7 @@ func TestSBCZPSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
         t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
     }
 
-    if cpu.PS.Z != 1 {
+    if cpu.PS.Z != 0 {
         t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
     }
 
@@ -183,8 +181,13 @@ func TestSBCZPSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 func TestSBCZPSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 
     // Given
+    // 127+1 = 128
     cpu := Init6502()
-    CheckSBCZPExecute(cpu, 0x7F, 0x01, 0x80, 3, t)
+    cpu.PS.C = 1
+
+    // 0x7F - (-1) - (1 - 1) = 0x80
+    // 0x7F - (-1) - (1 - 0) = 0x7F
+    CheckSBCZPExecute(cpu, 0x7F, common.Int8ToByte(-1), 0x80, t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -202,6 +205,33 @@ func TestSBCZPSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
         t.Error("Negative flag should be 1 but got ", cpu.PS.N)
     }
 }
+
+func TestSBCZPSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
+
+    // Given
+    // -128-1-1 = +126
+    cpu := Init6502()
+    cpu.PS.C = 0
+    CheckSBCZPExecute(cpu, common.Int8ToByte(-128), 0x01, 0x7E, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
+    }
+}
+
+/*
 
 
 func TestSBCZPXSubtractsCorrectlyZeroToZero(t *testing.T){
@@ -706,7 +736,7 @@ func TestSBCINDYSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 // memValue: the value in the memory cell that is added to the accumulator,
 // accumulator: initial value of the register,
 // expectedCycles: the number of cycles expected from the instruction execution,
-func CheckSBCIMExecute(cpu *CPU, accumulator, memValue, expectedResult byte, expectedCycles int, t *testing.T){
+func CheckSBCIMExecute(cpu *CPU, accumulator, memValue, expectedResult byte, t *testing.T){
 
     // Given
     cpu.A = accumulator
@@ -715,6 +745,7 @@ func CheckSBCIMExecute(cpu *CPU, accumulator, memValue, expectedResult byte, exp
     cpu.Memory.Data[0xFFFC] = instructions.INS_SBC_IM
     cpu.Memory.Data[0xFFFD] = memValue
 
+    expectedCycles := 2
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
@@ -731,7 +762,7 @@ func CheckSBCIMExecute(cpu *CPU, accumulator, memValue, expectedResult byte, exp
 // memValue: the value in the memory cell that is added to the accumulator,
 // accumulator: initial value of the register,
 // expectedCycles: the number of cycles expected from the instruction execution,
-func CheckSBCZPExecute(cpu *CPU, accumulator, memValue, expectedResult byte, expectedCycles int, t *testing.T){
+func CheckSBCZPExecute(cpu *CPU, accumulator, memValue, expectedResult byte, t *testing.T){
 
     // Given
     cpu.A = accumulator
@@ -741,6 +772,7 @@ func CheckSBCZPExecute(cpu *CPU, accumulator, memValue, expectedResult byte, exp
     cpu.Memory.Data[0xFFFD] = 0x4F
     cpu.Memory.Data[0x004F] = memValue
 
+    expectedCycles := 3
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
@@ -757,7 +789,7 @@ func CheckSBCZPExecute(cpu *CPU, accumulator, memValue, expectedResult byte, exp
 // memValue: the value in the memory cell that is added to the accumulator,
 // accumulator: initial value of the register,
 // expectedCycles: the number of cycles expected from the instruction execution,
-func CheckSBCZPXExecute(cpu *CPU, accumulator, memValue, expectedResult byte, expectedCycles int, t *testing.T){
+func CheckSBCZPXExecute(cpu *CPU, accumulator, memValue, expectedResult byte, t *testing.T){
 
     // Given
     cpu.A = accumulator
@@ -768,6 +800,7 @@ func CheckSBCZPXExecute(cpu *CPU, accumulator, memValue, expectedResult byte, ex
     cpu.Memory.Data[0xFFFD] = 0x4F
     cpu.Memory.Data[0x0053] = memValue
 
+    expectedCycles := 4
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
@@ -784,7 +817,7 @@ func CheckSBCZPXExecute(cpu *CPU, accumulator, memValue, expectedResult byte, ex
 // memValue: the value in the memory cell that is added to the accumulator,
 // accumulator: initial value of the register,
 // expectedCycles: the number of cycles expected from the instruction execution,
-func CheckSBCABSExecute(cpu *CPU, accumulator, memValue, expectedResult byte, expectedCycles int, t *testing.T){
+func CheckSBCABSExecute(cpu *CPU, accumulator, memValue, expectedResult byte, t *testing.T){
 
     // Given
     cpu.A = accumulator
@@ -795,6 +828,7 @@ func CheckSBCABSExecute(cpu *CPU, accumulator, memValue, expectedResult byte, ex
     cpu.Memory.Data[0xFFFE] = 0x50
     cpu.Memory.Data[0x504F] = memValue
 
+    expectedCycles := 4
     cyclesUsed := cpu.Execute(expectedCycles)
 
     if expectedCycles != cyclesUsed{
