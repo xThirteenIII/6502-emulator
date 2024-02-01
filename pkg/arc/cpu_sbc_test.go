@@ -679,10 +679,10 @@ func TestSBCABSYSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
     }
 }
 
-/*
 func TestSBCINDXSubtractsCorrectlyZeroToZero(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
     CheckSBCINDXExecute(cpu, 0x00, 0x00, 0x00, 6, t)
 
@@ -693,8 +693,9 @@ func TestSBCINDXSubtractsCorrectlyZeroToZero(t *testing.T){
 func TestSBCINDXSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 
     cpu := Init6502()
+    cpu.PS.C = 1
 
-    CheckSBCINDXExecute(cpu, 0x05, 0xF0, 0xF5, 6, t)
+    CheckSBCINDXExecute(cpu, 0x02, common.Int8ToByte(114), common.Int8ToByte(-112), 6, t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -716,12 +717,9 @@ func TestSBCINDXSubtractsCorrectlyWithNoCarryNorOverflow(t *testing.T){
 func TestSBCINDXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 
     cpu := Init6502()
-    CheckSBCINDXExecute(cpu, 0x05, 0xFB, 0x00, 6, t)
+    cpu.PS.C = 1
 
-    // Then
-    if cpu.A != 0x00 {
-        t.Error("Accumulator should be 0x00 but got: ", cpu.A)
-    }
+    CheckSBCINDXExecute(cpu, 0x02, 0x01, 0x01, 6, t)
 
     if cpu.PS.C != 1 {
         t.Error("Carry bit should be 1 but got ", cpu.PS.C)
@@ -731,7 +729,7 @@ func TestSBCINDXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
         t.Error("Overflow bit should be 0 but got ", cpu.PS.V)
     }
 
-    if cpu.PS.Z != 1 {
+    if cpu.PS.Z != 0 {
         t.Error("Zero flag should be 1 but got ", cpu.PS.Z)
     }
 
@@ -743,8 +741,13 @@ func TestSBCINDXSubtractsCorrectlyWithCarryAndNoOverflow(t *testing.T){
 func TestSBCINDXSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
 
     // Given
+    // 127+1 = 128
     cpu := Init6502()
-    CheckSBCINDXExecute(cpu, 0x7F, 0x01, 0x80, 6, t)
+    cpu.PS.C = 1
+
+    // 0x7F - (-1) - (1 - 1) = 0x80
+    // 0x7F - (-1) - (1 - 0) = 0x7F
+    CheckSBCINDXExecute(cpu, 0x7F, common.Int8ToByte(-1), 0x80, 6, t)
 
     if cpu.PS.C != 0 {
         t.Error("Carry bit should be 0 but got ", cpu.PS.C)
@@ -762,6 +765,34 @@ func TestSBCINDXSubtractsCorrectlyWithNoCarryAndOverflow(t *testing.T){
         t.Error("Negative flag should be 1 but got ", cpu.PS.N)
     }
 }
+
+func TestSBCINDXSubtractsCorrectlyWithPreviousCarryFlagClear(t *testing.T){
+
+    // Given
+    // -128-1-1 = +126
+    cpu := Init6502()
+    cpu.PS.C = 0
+    CheckSBCINDXExecute(cpu, common.Int8ToByte(-128), 0x01, 0x7E, 6, t)
+
+    if cpu.PS.C != 1 {
+        t.Error("Carry bit should be 0 but got ", cpu.PS.C)
+    }
+
+    if cpu.PS.V != 1 {
+        t.Error("Overflow bit should be 1 but got ", cpu.PS.V)
+    }
+
+    if cpu.PS.Z != 0 {
+        t.Error("Zero flag should be 0 but got ", cpu.PS.Z)
+    }
+
+    if cpu.PS.N != 0 {
+        t.Error("Negative flag should be 0 but got ", cpu.PS.N)
+    }
+}
+
+/*
+
 func TestSBCINDYSubtractsCorrectlyZeroToZero(t *testing.T){
 
     cpu := Init6502()
